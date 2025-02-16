@@ -1,7 +1,4 @@
-const dotenv = require('dotenv');
-const path = require('path');
-
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config();
 
 module.exports = {
     PORT: process.env.PORT || 5000,
@@ -35,15 +32,6 @@ module.exports = {
     },
     AFFILIATE: {
         COMMISSION_RATE: 5 // $5 per referral
-    },
-    GOOGLE_AUTH: {
-        CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-        CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-        CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL
-    },
-    FACEBOOK_AUTH: {
-        CLIENT_ID: process.env.FACEBOOK_CLIENT_ID,
-        CLIENT_SECRET: process.env.FACEBOOK_CLIENT_SECRET,
-        CALLBACK_URL: process.env.FACEBOOK_CALLBACK_URL
     }
 };
+
