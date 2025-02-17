@@ -24,8 +24,7 @@ dist-ssr
 *.sw?
 
 
-node_modules
-package-lock.json
+
 .env
 build
 yarn.lock
