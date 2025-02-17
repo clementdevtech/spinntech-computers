@@ -17,7 +17,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import NotFound from "./pages/NotFound";
-import "./styles.css";
+import './index.css';
+
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} /> 
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />

@@ -21,6 +21,21 @@ export const registerUser = createAsyncThunk("auth/registerUser", async (userDat
   }
 });
 
+
+//update user
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await axios.put("/api/auth/update-profile", userData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+
 // Logout User
 export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
   await axios.post("/api/auth/logout");

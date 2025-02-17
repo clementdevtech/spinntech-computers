@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -25,56 +26,52 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-semibold text-center mb-4">Register</h2>
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div className="card p-4 shadow w-100" style={{ maxWidth: "400px" }}>
+        <h2 className="text-center mb-4">Register</h2>
+        {error && <p className="text-danger text-center">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Name</label>
+          <div className="mb-3">
+            <label className="form-label">Name</label>
             <input
               type="text"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="form-control"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Email</label>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
             <input
               type="email"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Password</label>
+          <div className="mb-3">
+            <label className="form-label">Password</label>
             <input
               type="password"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="form-control"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Confirm Password</label>
+          <div className="mb-3">
+            <label className="form-label">Confirm Password</label>
             <input
               type="password"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="form-control"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-primary w-100" disabled={loading}>
             {loading ? "Registering..." : "Register"}
           </button>
         </form>

@@ -19,37 +19,47 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div className="card shadow p-4 w-100" style={{ maxWidth: "400px" }}>
+        <h2 className="text-center fw-bold mb-3">Login</h2>
+        
+        {error && <div className="alert alert-danger text-center">{error}</div>}
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Email</label>
+          {/* Email Input */}
+          <div className="mb-3">
+            <label className="form-label">Email</label>
             <input
               type="email"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Password</label>
+
+          {/* Password Input */}
+          <div className="mb-3">
+            <label className="form-label">Password</label>
             <input
               type="password"
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="form-control"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
+
+          {/* Submit Button */}
+          <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2"></span>
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
       </div>

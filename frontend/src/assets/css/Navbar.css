@@ -1,0 +1,285 @@
+:root {
+  --primary-color: #2b3a42;
+  --accent-color: #f59e42;
+  --background-color: #f9f9f9;
+  --text-color: #333333;
+  --light-gray: #e4e4e4;
+  --shadow-color: rgba(0, 0, 0, 0.15);
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: var(--text-color);
+  line-height: 1.6;
+  background-color: var(--background-color);
+}
+
+/* Navbar Styling */
+.navbar {
+  background-color: #1e40af;
+  padding: 1rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+/* Navbar Logo */
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar .logo:hover {
+  color: var(--accent-color);
+}
+
+/* Search Bar */
+.navbar .search-container {
+  position: relative;
+  width: 30%;
+}
+
+.navbar .search-container input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--light-gray);
+  font-size: 1rem;
+  transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Input Focus Effect */
+.navbar .search-container input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 8px var(--accent-color);
+  outline: none;
+}
+
+/* Search Button */
+.navbar .search-container button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.navbar .search-container button:hover {
+  color: var(--accent-color);
+}
+
+/* Animated Search Suggestions */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid var(--light-gray);
+  box-shadow: 0 4px 6px var(--shadow-color);
+  border-radius: 6px;
+  z-index: 1000;
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.search-suggestions.active {
+  display: block;
+}
+
+.search-suggestions li {
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-suggestions li:hover {
+  background-color: var(--light-gray);
+}
+
+/* Categories Dropdown */
+.navbar .categories {
+  position: relative;
+}
+
+.navbar .categories button {
+  background-color: white;
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navbar .categories button:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* Dropdown Menu */
+.navbar .categories .dropdown {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background-color: white;
+  color: black;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  border-radius: 6px;
+  width: 220px;
+  display: none;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar .categories:hover .dropdown {
+  display: block;
+}
+
+.navbar .categories .dropdown a {
+  padding: 0.75rem;
+  text-decoration: none;
+  display: block;
+  color: black;
+  transition: background-color 0.3s ease;
+}
+
+.navbar .categories .dropdown a:hover {
+  background-color: var(--light-gray);
+}
+
+/* User Section */
+.navbar .user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar .user-section .notification-bell {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.navbar .user-section .notification-bell:hover {
+  color: var(--accent-color);
+}
+
+/* User Dropdown */
+.navbar .user-section .user-menu {
+  position: relative;
+}
+
+.navbar .user-section .user-menu button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.navbar .user-section .user-menu button:hover {
+  color: var(--accent-color);
+}
+
+/* User Dropdown Menu */
+.navbar .user-section .user-menu .dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  color: black;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  border-radius: 6px;
+  width: 200px;
+  display: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar .user-section .user-menu:hover .dropdown {
+  display: block;
+}
+
+.navbar .user-section .user-menu .dropdown a {
+  padding: 0.75rem;
+  text-decoration: none;
+  display: block;
+  color: black;
+  transition: background-color 0.3s ease;
+}
+
+.navbar .user-section .user-menu .dropdown a:hover {
+  background-color: var(--light-gray);
+}
+
+/* Login Link */
+.navbar .user-section .login-link {
+  color: white;
+  text-decoration: underline;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.navbar .user-section .login-link:hover {
+  color: var(--accent-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+  }
+
+  .navbar .search-container {
+      width: 100%;
+      margin-top: 1rem;
+  }
+
+  .navbar .user-section {
+      width: 100%;
+      justify-content: space-between;
+      margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+      font-size: 0.875rem;
+  }
+
+  .navbar .logo {
+      font-size: 1.25rem;
+  }
+
+  .navbar .search-container input {
+      padding: 0.4rem;
+  }
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-5px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
