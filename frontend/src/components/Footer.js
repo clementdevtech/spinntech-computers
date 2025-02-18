@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 
 const Footer = () => {
   return (
@@ -11,9 +11,9 @@ const Footer = () => {
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold">Quick Links</h5>
             <ul className="list-unstyled">
-              <li><a href="/" className="text-light text-decoration-none d-block py-1">🏠 Home</a></li>
-              <li><a href="/shop" className="text-light text-decoration-none d-block py-1">🛒 Shop</a></li>
-              <li><a href="/contact" className="text-light text-decoration-none d-block py-1">📞 Contact Us</a></li>
+              <li><Link to="/" className="text-light text-decoration-none d-block py-1">🏠 Home</Link></li>
+              <li><Link to="/shop" className="text-light text-decoration-none d-block py-1">🛒 Shop</Link></li>
+              <li><Link to="/contact" className="text-light text-decoration-none d-block py-1">📞 Contact Us</Link></li>
             </ul>
           </div>
 
@@ -21,8 +21,8 @@ const Footer = () => {
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold">Legal</h5>
             <ul className="list-unstyled">
-              <li><a href="/terms" className="text-light text-decoration-none d-block py-1">📜 Terms of Service</a></li>
-              <li><a href="/privacy" className="text-light text-decoration-none d-block py-1">🔒 Privacy Policy</a></li>
+              <li><Link to="/terms" className="text-light text-decoration-none d-block py-1">📜 Terms of Service</Link></li>
+              <li><Link to="/privacy" className="text-light text-decoration-none d-block py-1">🔒 Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -30,15 +30,15 @@ const Footer = () => {
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold">Follow Us</h5>
             <div className="d-flex gap-3">
-              <a href="#" className="text-light fs-5">
-                <i className="fab fa-facebook-f"></i>
+               <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                <FaFacebook size={24} />
               </a>
-              <a href="#" className="text-light fs-5">
-                <i className="fab fa-twitter"></i>
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                <FaInstagram size={24} />
               </a>
-              <a href="#" className="text-light fs-5">
-                <i className="fab fa-instagram"></i>
-              </a>
+              <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">
+                <FaTiktok size={24} />
+                </a>
             </div>
           </div>
         </div>

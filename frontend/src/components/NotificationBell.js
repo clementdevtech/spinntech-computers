@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const NotificationBell = () => {
-  const [notifications, setNotifications] = useState([
+  const [notifications] = useState([
     { id: 1, message: "New product added!", time: "2 mins ago" },
     { id: 2, message: "Price drop on your wishlist item!", time: "1 hour ago" },
   ]);

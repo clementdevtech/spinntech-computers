@@ -6,7 +6,7 @@ const Profile = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [name, setName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [email] = useState(user?.email || "");
 
   const handleSubmit = (e) => {
     e.preventDefault();
