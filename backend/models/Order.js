@@ -1,20 +1,28 @@
-const db = require("../config/db");
+const { Model } = require("objection");
+const knex = require("../db");
 
-class Order {
-    static async create({ userId, totalAmount }) {
-        const [order] = await db("orders")
-            .insert({ user_id: userId, total_amount: totalAmount })
-            .returning("*");
-        return order;
-    }
+Model.knex(knex);
 
-    static async findByUserId(userId) {
-        return db("orders").where({ user_id: userId }).select("*");
-    }
+class Order extends Model {
+  static get tableName() {
+    return "orders";
+  }
 
-    static async findAll() {
-        return db("orders").select("*");
-    }
+  static get idColumn() {
+    return "id";
+  }
+
+  static async findAll() {
+    return knex("orders").select("*");
+  }
+
+  static async findById(orderId) {
+    return knex("orders").where("id", orderId).first();
+  }
+
+  static async create({ userId, totalAmount, status }) {
+    return knex("orders").insert({ user_id: userId, total_amount: totalAmount, status }).returning("*");
+  }
 }
 
 module.exports = Order;

@@ -4,8 +4,8 @@ const affiliateController = require('../controllers/affiliateController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 
 // Affiliate routes
-router.get('/referrals', verifyToken, affiliateController.getUserReferrals);
-router.get('/earnings', verifyToken, affiliateController.getAffiliateEarnings);
+router.get('/referrals', verifyToken, affiliateController.getReferrals);
+router.get('/earnings', verifyToken, affiliateController.getEarnings);
 router.post('/withdraw', verifyToken, affiliateController.withdrawEarnings);
 
 module.exports = router;

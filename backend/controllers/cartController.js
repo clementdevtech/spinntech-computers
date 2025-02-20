@@ -5,9 +5,8 @@ exports.addToCart = async (req, res) => {
         const userId = req.user.id;
         const { productId, quantity } = req.body;
 
-        const updatedCart = await Cart.addItem(userId, productId, quantity);
-
-        res.status(201).json({ message: "Item added to cart", updatedCart });
+        await Cart.addItem(userId, productId, quantity);
+        res.status(201).json({ message: "Item added to cart" });
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
@@ -22,9 +21,19 @@ exports.getCart = async (req, res) => {
     }
 };
 
-exports.removeFromCart = async (req, res) => {
+exports.updateCartItem = async (req, res) => {
     try {
-        await Cart.removeItem(req.user.id, req.params.productId);
+        const { productId, quantity } = req.body;
+        await Cart.updateQuantity(req.user.id, productId, quantity);
+        res.json({ message: "Cart updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+exports.removeCartItem = async (req, res) => {
+    try {
+        await Cart.removeItem(req.user.id, req.params.itemId);
         res.json({ message: "Item removed from cart" });
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
