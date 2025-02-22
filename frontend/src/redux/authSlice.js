@@ -4,14 +4,24 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL;
 
 // Register User
-export const registerUser = createAsyncThunk("auth/registerUser", async (userData, { rejectWithValue }) => {
-  try {
-    const response = await axios.post(`${API_URL}/auth/register`, userData);
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || error.message || "Registration failed");
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const userPayload = {
+        ...userData,
+        password: String(userData.password),
+      };
+
+      const response = await axios.post(`${API_URL}/auth/register`, userPayload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Registration failed");
+    }
   }
-});
+);
+
+
 
 // Login User
 export const loginUser = createAsyncThunk("auth/loginUser", async (userData, { rejectWithValue }) => {

@@ -1,32 +1,23 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import "../assets/css/sidebar.css";
 
 const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <div className="w-64 h-screen bg-gray-900 text-white p-4 fixed">
-      <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
-      <ul>
-        <li className="mb-2">
-          <Link to="/dashboard" className="hover:underline">Home</Link>
-        </li>
-        <li className="mb-2">
-          <Link to="/orders" className="hover:underline">Orders</Link>
-        </li>
-        <li className="mb-2">
-          <Link to="/cart" className="hover:underline">Cart</Link>
-        </li>
+    <div>
+      <h2 className="text-white fw-bold mb-4">Dashboard</h2>
+      <ul className="list-unstyled">
+        <li className="mb-2"><Link to="/dashboard" className="text-white text-decoration-none">Home</Link></li>
+        <li className="mb-2"><Link to="/orders" className="text-white text-decoration-none">Orders</Link></li>
+        <li className="mb-2"><Link to="/cart" className="text-white text-decoration-none">Cart</Link></li>
         {user?.role === "admin" && (
           <>
-            <hr className="border-gray-600 my-2" />
-            <h3 className="text-lg font-semibold">Admin Panel</h3>
-            <li className="mb-2">
-              <Link to="/admin/products" className="hover:underline">Manage Products</Link>
-            </li>
-            <li className="mb-2">
-              <Link to="/admin/users" className="hover:underline">Manage Users</Link>
-            </li>
+            <hr className="border-light my-2" />
+            <h3 className="text-white fw-semibold">Admin Panel</h3>
+            <li className="mb-2"><Link to="/admin/products" className="text-white text-decoration-none">Manage Products</Link></li>
+            <li className="mb-2"><Link to="/admin/users" className="text-white text-decoration-none">Manage Users</Link></li>
           </>
         )}
       </ul>

@@ -2,30 +2,36 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const {db} = require("../db");
+const crypto = require('crypto');
+
 const { sendVerificationEmail, sendResetPasswordEmail } = require("../services/emailService");
 
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
-  console.log(req.body);
+  let { name, email, password } = req.body;
+  password = String(password);
+ 
   if (!name || !email || !password) {
     return res.status(400).json({ message: "Name, email, and password are required" });
   }
 
-  if (typeof password !== 'string') {
-    return res.status(400).json({ message: "Password must be a string" });
-    }
   try {
-    const existingUser = await db("users").where({ email }).first();
-    if (existingUser) return res.status(400).json({ message: "Email already registered" });
+    const existingUser = await db('users')
+    .where('username', name)
+    .orWhere('email', email)
+    .first();
+    
+    if (existingUser) {
+        return res.status(400).json({ message: "Username or email already taken" });
+        }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
     await db("users").insert({
-      name,
+      username: name,
       email,
-      password: hashedPassword,
+      password_hash: hashedPassword,
       verification_token: verificationToken,
       is_verified: false,
     });

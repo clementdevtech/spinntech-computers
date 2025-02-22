@@ -14,11 +14,11 @@ const pool = new Pool({
 const knexConfig = {
     client: 'pg',
     connection: {
-      host: process.env.dbhost,
-      port: process.env.dbport,
-      user: process.env.dbuser,
-      password: process.env.dbpassword,
-      database: process.env.dbname
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME
     }
   };
   

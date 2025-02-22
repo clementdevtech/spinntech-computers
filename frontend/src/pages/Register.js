@@ -61,11 +61,14 @@ const Register = () => {
       return;
     }
     
-    const result = await dispatch(registerUser({ name, email, password }));
-    if (result.payload?.token) {
-      navigate("/dashboard");
-    }
-  };
+     const result = await dispatch(registerUser({ name, email, password }));
+
+  //Capture success response and navigate
+  if (result.payload?.message) {
+    alert(result.payload.message);
+    navigate("/login");
+  }
+};
 
   return (
     <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
