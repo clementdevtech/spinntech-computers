@@ -1,11 +1,33 @@
 import { useState } from "react";
+const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const handleReset = () => {
-    setMessage("A password reset link has been sent to your email.");
+  const handleReset = async () => {
+    try {
+      const response = await fetch(`${REACT_APP_API_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      setMessage(data.message);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+      setMessage("");
+    }
   };
 
   return (
@@ -19,8 +41,14 @@ const ForgotPassword = () => {
           value={email} 
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button onClick={handleReset} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">Reset Password</button>
+        <button 
+          onClick={handleReset} 
+          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Reset Password
+        </button>
         {message && <p className="text-green-600 mt-2">{message}</p>}
+        {error && <p className="text-red-600 mt-2">{error}</p>}
       </div>
     </div>
   );

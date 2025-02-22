@@ -5,7 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const app = require('./app');
 
-// Load environment variables
+
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
