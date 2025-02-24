@@ -1,209 +1,158 @@
-// Updated Home.js with hero section, featured products, customer reviews, promotional offer, and animated chat support
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../redux/productSlice";
+import { fetchCategories } from "../services/productService";
 import { Link } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import ProductListing from "../components/ProductListing";
-import Sidebar from "../components/ui/Sidebar";
-import { Outlet, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { FaFilter, FaComments } from "react-icons/fa";
+import Loader from "../components/ui/Loader";
 
 const Home = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState("user");
-  const [showChat, setShowChat] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { products, loading } = useSelector((state) => state.products);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 1000]);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setIsLoggedIn(true);
-      setUserRole(user.role);
-    }
-    const welcomeMessages = [
-      "Hello! Welcome to our site.",
-      "How can we assist you today?",
-    ];
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < welcomeMessages.length) {
-        setChatMessages((prev) => [
-          ...prev,
-          { text: welcomeMessages[index], sender: "bot" },
-        ]);
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 1500);
-    return () => clearInterval(interval);
-  }, []);
+    dispatch(fetchProducts());
+    loadCategories();
+  }, [dispatch]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setUserRole("user");
-    navigate("/login");
+  // Load categories from backend
+  const loadCategories = async () => {
+    const response = await fetchCategories();
+    setCategories(response);
   };
 
-  const sendMessage = (message) => {
-    if (!message.trim()) return;
-    setChatMessages((prev) => [...prev, { text: message, sender: "user" }]);
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        { text: "Thank you for your message. We will assist you shortly!", sender: "bot" },
-      ]);
-    }, 1000);
-  };
+  // Filter products based on selected category and price range
+  const filteredProducts = products.filter((product) => {
+    const withinPriceRange =
+      product.price >= priceRange[0] && product.price <= priceRange[1];
+    const matchesCategory = selectedCategory
+      ? product.category === selectedCategory
+      : true;
+    return withinPriceRange && matchesCategory;
+  });
 
   return (
-    <div className="bg-light min-vh-100 relative overflow-hidden">
-      <Sidebar isLoggedIn={isLoggedIn} userRole={userRole} handleLogout={handleLogout} />
-
-      {/* Hero Section */}
-      <section
-        className="hero-section position-relative text-center text-white d-flex align-items-center justify-content-center"
-        style={{
-          backgroundImage: "url('/assets/hero-banner.jpg')",
-          height: "500px",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="bg-dark bg-opacity-50 p-5 rounded shadow-lg">
-          <h1 className="display-4 fw-bold">Shop the Latest Trends</h1>
-          <p className="lead">Find exclusive deals on high-quality products.</p>
-          <div className="mt-3">
-            <Link to="/shop" className="btn btn-success btn-lg me-3 shadow-sm">
-              Shop Now
+    <>
+      <div className="bg-light">
+        {/* Hero Section */}
+        <section className="hero bg-dark text-white text-center py-5">
+          <Container>
+            <h1 className="display-4 fw-bold">Find the Best Deals Here!</h1>
+            <p className="lead">Shop the most recent and best-priced commodities.</p>
+            <Link to="/shop">
+              <Button variant="warning" size="lg">
+                Shop Now
+              </Button>
             </Link>
-            <Link to="/register" className="btn btn-primary btn-lg shadow-sm">
-              Get Started
-            </Link>
-          </div>
+          </Container>
+        </section>
+
+        {/* Filters Section */}
+        <Container className="my-4">
+          <h2 className="text-center mb-4">
+            <FaFilter /> Filter Products
+          </h2>
+          <Row className="justify-content-center">
+            <Col md={4}>
+              <Form.Group controlId="categorySelect">
+                <Form.Label>Select Category</Form.Label>
+                <Form.Select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group controlId="priceRange">
+                <Form.Label>Price Range: ${priceRange[0]} - ${priceRange[1]}</Form.Label>
+                <Form.Range
+                  min="0"
+                  max="1000"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+        </Container>
+
+        {/* Most Recent Commodities */}
+        <Container className="my-5">
+          <h2 className="text-center mb-4">Most Recent Commodities</h2>
+          {loading ? (
+            <Loader />
+          ) : (
+            <Row>
+              {filteredProducts
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 4)
+                .map((product) => (
+                  <Col md={3} key={product.id} className="mb-4">
+                    <Card className="shadow-sm">
+                      <Card.Img variant="top" src={product.image} />
+                      <Card.Body>
+                        <Card.Title>{product.name}</Card.Title>
+                        <Card.Text>${product.price}</Card.Text>
+                        <Link to={`/product/${product.id}`}>
+                          <Button variant="primary">View</Button>
+                        </Link>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+            </Row>
+          )}
+        </Container>
+
+        {/* Best Prices */}
+        <Container className="my-5">
+          <h2 className="text-center mb-4">Best Prices</h2>
+          {loading ? (
+            <Loader />
+          ) : (
+            <Row>
+              {filteredProducts
+                .sort((a, b) => a.price - b.price)
+                .slice(0, 4)
+                .map((product) => (
+                  <Col md={3} key={product.id} className="mb-4">
+                    <Card className="shadow-sm">
+                      <Card.Img variant="top" src={product.image} />
+                      <Card.Body>
+                        <Card.Title>{product.name}</Card.Title>
+                        <Card.Text>${product.price}</Card.Text>
+                        <Link to={`/product/${product.id}`}>
+                          <Button variant="success">View</Button>
+                        </Link>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+            </Row>
+          )}
+        </Container>
+
+        {/* Chat Button */}
+        <div className="position-fixed bottom-0 end-0 m-3">
+          <Link to="/chat-support">
+            <Button variant="info" className="p-3 shadow-lg">
+              <FaComments size={24} /> Chat Support
+            </Button>
+          </Link>
         </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="container py-5">
-        <h2 className="text-center fw-bold mb-4">Featured Products</h2>
-        <ProductListing />
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="container py-5 bg-white text-center rounded shadow-sm">
-        <h3 className="fw-bold mb-4">Why Shop With Us?</h3>
-        <div className="row g-4">
-          <div className="col-md-4">
-            <div className="p-4 bg-light rounded shadow-sm">
-              <h4 className="text-success fw-semibold">🚀 Fast Shipping</h4>
-              <p>We deliver your products quickly and efficiently.</p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="p-4 bg-light rounded shadow-sm">
-              <h4 className="text-primary fw-semibold">🔒 Secure Payments</h4>
-              <p>Your transactions are safe and encrypted.</p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="p-4 bg-light rounded shadow-sm">
-              <h4 className="text-warning fw-semibold">📞 24/7 Support</h4>
-              <p>We are always here to assist you.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Customer Reviews */}
-      <section className="container py-5 bg-light text-center rounded shadow-sm">
-        <h3 className="fw-bold mb-4">What Our Customers Say</h3>
-        <div className="row g-4">
-          <div className="col-md-4">
-            <div className="p-4 bg-white rounded shadow-sm">
-              <p className="text-muted fst-italic">"Amazing products and super fast delivery!"</p>
-              <p className="fw-bold text-secondary">- Sarah W.</p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="p-4 bg-white rounded shadow-sm">
-              <p className="text-muted fst-italic">"The best shopping experience ever! Highly recommend."</p>
-              <p className="fw-bold text-secondary">- James K.</p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="p-4 bg-white rounded shadow-sm">
-              <p className="text-muted fst-italic">"Excellent customer service and great prices."</p>
-              <p className="fw-bold text-secondary">- Emily R.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Promotional Offer */}
-      <section className="container py-5 text-center bg-danger text-white rounded shadow-sm">
-        <h3 className="fw-bold mb-2">Limited-Time Offer! 🚀</h3>
-        <p>Enjoy exclusive discounts on select products. Hurry before the offer ends!</p>
-        <Link to="/shop" className="btn btn-light btn-lg fw-bold mt-2 shadow-sm">
-          Grab the Deals
-        </Link>
-      </section>
-
-      {/* Chat Support Section */}
-      <motion.div
-        initial={{ x: -300 }}
-        animate={{ x: showChat ? 0 : -300 }}
-        transition={{ type: "spring", stiffness: 120 }}
-        className="fixed bottom-4 left-4 bg-white p-4 shadow-lg rounded-lg w-80 z-50"
-      >
-        <h3 className="text-lg font-semibold mb-2">Live Chat Support</h3>
-        <div className="h-48 overflow-y-auto border p-2 rounded">
-          {chatMessages.map((msg, index) => (
-            <div
-              key={index}
-              className={`p-1 rounded ${
-                msg.sender === "user" ? "text-right" : "text-left"
-              }`}
-            >
-              <span
-                className={`inline-block p-2 rounded-lg ${
-                  msg.sender === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-300"
-                }`}
-              >
-                {msg.text}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="d-flex mt-2">
-          <input
-            type="text"
-            className="form-control w-100"
-            placeholder="Type a message..."
-            onKeyDown={(e) => e.key === "Enter" && sendMessage(e.target.value)}
-          />
-          <button
-            onClick={() => setShowChat(!showChat)}
-            className="btn btn-primary ms-2"
-          >
-            {showChat ? "Close" : "Chat"}
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Chat toggle button */}
-      {!showChat && (
-        <button
-          onClick={() => setShowChat(true)}
-          className="fixed bottom-4 left-4 bg-primary text-white p-3 rounded-full shadow-lg"
-        >
-          Chat Support
-        </button>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

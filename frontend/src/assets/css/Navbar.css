@@ -81,6 +81,23 @@ body {
   font-size: 0.9rem;
 }
 
+.search-container .fa-search {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: gray;
+}
+
+/* Clear Search Button */
+.search-container .fa-times {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: red;
+  cursor: pointer;
+}
 /* Category dropdown styling with fixed width */
 .category-dropdown button {
   background-color: var(--accent-color);

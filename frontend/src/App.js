@@ -10,7 +10,6 @@ import Cart from "./pages/Cart";
 import ChatSupport from "./pages/ChatSupport";
 import Profile from "./pages/Profile";
 import Payment from "./pages/Payment";
-import ProductListing from "./pages/ProductListing";
 import Orders from "./pages/Orders";
 import Affiliate from "./pages/Affiliate";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -40,7 +39,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/payment" element={<Payment />} />
-          <Route path="/productListing" element={<ProductListing />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />

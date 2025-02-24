@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { secretKey } = process.env.secretKey; // Your secret key
+const { secretKey } = process.env.secretKey;
 
 // Middleware to verify token
 exports.verifyToken = (req, res, next) => {
@@ -25,3 +25,5 @@ exports.isAdmin = (req, res, next) => {
     }
     next();
 };
+
+

@@ -1,51 +1,29 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchCategories } from "../redux/productSlice";
+import { FaSearch, FaTimes } from "react-icons/fa";
+import { BsList } from "react-icons/bs";
 import "../assets/css/Navbar.css";
 import "../assets/css/sidebar.css";
 import { logoutUser } from "../redux/authSlice";
 import NotificationBell from "./NotificationBell";
 import Sidebar from "./Sidebar";
-import { BsList } from "react-icons/bs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { categories, loading } = useSelector((state) => state.products);
   const [search, setSearch] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
 
   useEffect(() => {
-    setCategories([
-      "Laptops",
-      "Desktops",
-      "Accessories",
-      "Gaming",
-      "Networking",
-      "Monitors",
-      "Keyboards",
-      "Mouse",
-      "Graphics Cards",
-      "Headphones",
-    ]);
-
-    const handleOutsideClick = (event) => {
-      if (
-        sidebarRef.current &&
-        !sidebarRef.current.contains(event.target) &&
-        !event.target.classList.contains("toggle-sidebar-btn")
-      ) {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -55,13 +33,15 @@ const Navbar = () => {
     );
   };
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const clearSearch = () => {
+    setSearch("");
+    setFilteredItems([]);
+  };
 
   return (
     <div className="navbar-container d-flex flex-column w-100">
       <nav className="navbar-upper d-flex justify-content-between align-items-center w-100 py-2 flex-wrap">
         <div className="d-flex align-items-center">
-          
           <Link className="navbar-brand text-white fw-bold fs-4" to="/">
             CompanyName
           </Link>
@@ -102,14 +82,24 @@ const Navbar = () => {
       </nav>
 
       <nav className="navbar-lower d-flex justify-content-between align-items-center w-100 py-2 flex-column flex-md-row">
+        
+        {/* Enhanced Search Bar */}
         <div className="search-container position-relative w-50 w-md-50 me-md-3 mb-2 mb-md-0">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search for products..."
-            value={search}
-            onChange={handleSearch}
-          />
+          <div className="position-relative">
+            <input
+              type="text"
+              className="form-control ps-4"
+              placeholder="Search for products..."
+              value={search}
+              onChange={handleSearch}
+            />
+            <FaSearch className="position-absolute top-50 start-0 ms-2 translate-middle text-muted" />
+            {search && (
+              <FaTimes className="position-absolute top-50 end-0 me-2 translate-middle text-danger cursor-pointer" onClick={clearSearch} />
+            )}
+          </div>
+
+          {/* Search Suggestions */}
           {filteredItems.length > 0 && (
             <ul className="list-group position-absolute w-100 shadow-sm mt-1">
               {filteredItems.map((item, index) => (
@@ -117,7 +107,7 @@ const Navbar = () => {
                   <Link
                     to={`/category/${item}`}
                     className="text-decoration-none text-dark"
-                    onClick={() => setIsSidebarOpen(false)}
+                    onClick={clearSearch}
                   >
                     {item}
                   </Link>
@@ -127,6 +117,7 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* Dynamic Category Dropdown */}
         <div className="dropdown category-dropdown">
           <button
             className="btn btn-outline-light dropdown-toggle"
@@ -138,42 +129,36 @@ const Navbar = () => {
             Categories
           </button>
           <ul className="dropdown-menu w-100" aria-labelledby="categoryDropdown">
-            {categories.map((category, index) => (
-              <li key={index}>
-                <Link
-                  className="dropdown-item"
-                  to={`/category/${category}`}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  {category}
-                </Link>
-              </li>
-            ))}
+            {loading ? (
+              <li className="dropdown-item text-center">Loading...</li>
+            ) : categories.length > 0 ? (
+              categories.map((category, index) => (
+                <li key={index}>
+                  <Link className="dropdown-item" to={`/category/${category}`}>
+                    {category}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <li className="dropdown-item text-center">No categories found</li>
+            )}
           </ul>
-          
         </div>
+
         <button
-            className="btn toggle-sidebar-btn me-3"
-            onClick={toggleSidebar}
-            style={{ backgroundColor: "#1e88e5", color: "white" }}
-          >
-            <BsList size={28} />
-          </button>
+          className="btn toggle-sidebar-btn me-3"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          style={{ backgroundColor: "#1e88e5", color: "white" }}
+        >
+          <BsList size={28} />
+        </button>
       </nav>
 
-      {/* Sidebar with overlay behavior */}
-      <div
-        ref={sidebarRef}
-        className={`sidebar ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}
-      >
+      {/* Sidebar */}
+      <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
         <Sidebar closeSidebar={() => setIsSidebarOpen(false)} />
       </div>
-      {isSidebarOpen && (
-        <div
-          className="overlay"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+      {isSidebarOpen && <div className="overlay" onClick={() => setIsSidebarOpen(false)}></div>}
     </div>
   );
 };

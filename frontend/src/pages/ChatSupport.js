@@ -1,18 +1,24 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMessages } from "../redux/chatSlice";
 
 const ChatSupport = () => {
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
+  const dispatch = useDispatch();
+  const { messages } = useSelector((state) => state.chat);
+  const [newMessage, setNewMessage] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchMessages());
+  }, [dispatch]);
 
   const sendMessage = () => {
-    if (!message.trim()) return;
-    const newMessages = [...messages, { text: message, sender: "user" }];
-    setMessages(newMessages);
-    setMessage("");
-    
-    // Simulating bot response
+    if (!newMessage.trim()) return;
+    const updatedMessages = [...messages, { text: newMessage, sender: "user" }];
+    setNewMessage("");
+
+    // Simulate bot response
     setTimeout(() => {
-      setMessages([...newMessages, { text: "Thank you for reaching out! How can we assist you?", sender: "bot" }]);
+      updatedMessages.push({ text: "Thank you for reaching out!", sender: "bot" });
     }, 1000);
   };
 
@@ -31,11 +37,13 @@ const ChatSupport = () => {
           <input 
             type="text" 
             className="flex-1 p-2 border rounded" 
-            value={message} 
-            onChange={(e) => setMessage(e.target.value)}
+            value={newMessage} 
+            onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
           />
-          <button onClick={sendMessage} className="ml-2 bg-blue-500 text-white px-4 py-2 rounded">Send</button>
+          <button onClick={sendMessage} className="ml-2 bg-blue-500 text-white px-4 py-2 rounded">
+            Send
+          </button>
         </div>
       </div>
     </div>
