@@ -7,12 +7,13 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import Orders from "./pages/Orders";
+import ChatSupport from "./pages/ChatSupport";
 import Profile from "./pages/Profile";
+import Payment from "./pages/Payment";
+import ProductListing from "./pages/ProductListing";
+import Orders from "./pages/Orders";
 import Affiliate from "./pages/Affiliate";
 import AdminDashboard from "./pages/AdminDashboard";
-import ChatSupport from "./pages/ChatSupport";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -31,13 +32,15 @@ function App() {
           <Route path="/" element={<Home />} /> 
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/affiliate" element={<Affiliate />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/chat-support" element={<ChatSupport />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/productListing" element={<ProductListing />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />

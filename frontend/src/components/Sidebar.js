@@ -1,27 +1,63 @@
-import { useSelector } from "react-redux";
+// Updated Sidebar.js with conditional rendering based on authentication and user role
+import React from "react";
 import { Link } from "react-router-dom";
-import "../assets/css/sidebar.css";
+import { Home, User, ShoppingCart, DollarSign, Bell, Users, LogOut, Shield } from "lucide-react";
 
-const Sidebar = () => {
-  const { user } = useSelector((state) => state.auth);
-
+const Sidebar = ({ isLoggedIn, userRole, handleLogout }) => {
   return (
-    <div>
-      <h2 className="text-white fw-bold mb-4">Dashboard</h2>
-      <ul className="list-unstyled">
-        <li className="mb-2"><Link to="/dashboard" className="text-white text-decoration-none">Home</Link></li>
-        <li className="mb-2"><Link to="/orders" className="text-white text-decoration-none">Orders</Link></li>
-        <li className="mb-2"><Link to="/cart" className="text-white text-decoration-none">Cart</Link></li>
-        {user?.role === "admin" && (
+    <aside className="w-64 bg-gray-900 text-white min-h-screen p-5 space-y-6">
+      <div className="text-center text-3xl font-bold tracking-wide">Dashboard</div>
+      <nav className="space-y-4">
+        <Link to="/" className="flex items-center space-x-3 hover:text-indigo-400">
+          <Home size={20} />
+          <span>Home</span>
+        </Link>
+        {isLoggedIn && (
           <>
-            <hr className="border-light my-2" />
-            <h3 className="text-white fw-semibold">Admin Panel</h3>
-            <li className="mb-2"><Link to="/admin/products" className="text-white text-decoration-none">Manage Products</Link></li>
-            <li className="mb-2"><Link to="/admin/users" className="text-white text-decoration-none">Manage Users</Link></li>
+            <Link to="/dashboard" className="flex items-center space-x-3 hover:text-indigo-400">
+              <Home size={20} />
+              <span>Dashboard</span>
+            </Link>
+            <Link to="/profile" className="flex items-center space-x-3 hover:text-indigo-400">
+              <User size={20} />
+              <span>Profile</span>
+            </Link>
+            <Link to="/orders" className="flex items-center space-x-3 hover:text-indigo-400">
+              <ShoppingCart size={20} />
+              <span>Orders</span>
+            </Link>
+            <Link to="/payment" className="flex items-center space-x-3 hover:text-indigo-400">
+              <DollarSign size={20} />
+              <span>Payments</span>
+            </Link>
+            <Link to="/affiliate" className="flex items-center space-x-3 hover:text-indigo-400">
+              <Users size={20} />
+              <span>Affiliate</span>
+            </Link>
+            <Link to="/notifications" className="flex items-center space-x-3 hover:text-indigo-400">
+              <Bell size={20} />
+              <span>Notifications</span>
+            </Link>
+            {userRole === "admin" && (
+              <Link to="/adminpanel" className="flex items-center space-x-3 hover:text-indigo-400">
+                <Shield size={20} />
+                <span>Admin Panel</span>
+              </Link>
+            )}
+            <button onClick={handleLogout} className="flex items-center space-x-3 hover:text-red-400">
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
           </>
         )}
-      </ul>
-    </div>
+        {!isLoggedIn && (
+          <Link to="/login" className="flex items-center space-x-3 hover:text-green-400">
+            <User size={20} />
+            <span>Login</span>
+          </Link>
+        )}
+      </nav>
+    </aside>
   );
 };
 

@@ -14,272 +14,168 @@ body {
   background-color: var(--background-color);
 }
 
-/* Navbar Styling */
-.navbar {
-  background-color: #1e40af;
-  padding: 1rem;
-  color: white;
+
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+/* Navbar container styling */
+.navbar-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--gradient-bg);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+/* Upper and lower rows with consistent width and flex settings */
+.navbar-upper,
+.navbar-lower {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'Arial', sans-serif;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 6px var(--shadow-color);
+  padding: 1rem;
+  flex-wrap: nowrap;
+  flex: 1 1 auto;
 }
 
-/* Navbar Logo */
-.navbar .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: white;
-  text-decoration: none;
-  transition: color 0.3s ease;
+.navbar-upper {
+  background-color: var(--primary-color);
 }
 
-.navbar .logo:hover {
-  color: var(--accent-color);
+.navbar-lower {
+  background-color: var(--primary-color);
+  border-top: 1px solid var(--light-gray);
 }
 
-/* Search Bar */
-.navbar .search-container {
-  position: relative;
-  width: 30%;
-}
-
-.navbar .search-container input {
-  width: 100%;
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: 1px solid var(--light-gray);
-  font-size: 1rem;
-  transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-/* Input Focus Effect */
-.navbar .search-container input:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 8px var(--accent-color);
-  outline: none;
-}
-
-/* Search Button */
-.navbar .search-container button {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  color: #6b7280;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.navbar .search-container button:hover {
-  color: var(--accent-color);
-}
-
-/* Animated Search Suggestions */
-.search-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background-color: white;
-  border: 1px solid var(--light-gray);
-  box-shadow: 0 4px 6px var(--shadow-color);
-  border-radius: 6px;
-  z-index: 1000;
-  display: none;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.search-suggestions.active {
-  display: block;
-}
-
-.search-suggestions li {
-  padding: 0.75rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.search-suggestions li:hover {
-  background-color: var(--light-gray);
-}
-
-/* Categories Dropdown */
-.navbar .categories {
-  position: relative;
-}
-
-.navbar .categories button {
-  background-color: white;
-  color: black;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.navbar .categories button:hover {
-  background-color: var(--accent-color);
-  color: white;
-}
-
-/* Dropdown Menu */
-.navbar .categories .dropdown {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  background-color: white;
-  color: black;
+/* Sidebar toggle button with improved visibility */
+.toggle-sidebar-btn {
+  background: var(--gradient-bg);
   box-shadow: 0 4px 8px var(--shadow-color);
-  border-radius: 6px;
-  width: 220px;
-  display: none;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
-}
-
-.navbar .categories:hover .dropdown {
-  display: block;
-}
-
-.navbar .categories .dropdown a {
-  padding: 0.75rem;
-  text-decoration: none;
-  display: block;
-  color: black;
-  transition: background-color 0.3s ease;
-}
-
-.navbar .categories .dropdown a:hover {
-  background-color: var(--light-gray);
-}
-
-/* User Section */
-.navbar .user-section {
+  border: none;
+  color: white;
+  padding: 0.6rem;
+  border-radius: 50%;
+  font-size: 2rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  box-shadow: 0 2px 5px var(--shadow-color);
 }
 
-.navbar .user-section .notification-bell {
-  cursor: pointer;
-  transition: color 0.3s ease;
+.toggle-sidebar-btn:hover {
+  background-color: #64b5f6;
 }
 
-.navbar .user-section .notification-bell:hover {
-  color: var(--accent-color);
+/* Adjusted search bar size */
+.search-container input {
+  width: 40%;
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  font-size: 0.9rem;
 }
 
-/* User Dropdown */
-.navbar .user-section .user-menu {
-  position: relative;
-}
-
-.navbar .user-section .user-menu button {
-  background: none;
+/* Category dropdown styling with fixed width */
+.category-dropdown button {
+  background-color: var(--accent-color);
   border: none;
   color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.3s ease;
+  font-weight: bold;
+  width: 100%;
 }
 
-.navbar .user-section .user-menu button:hover {
-  color: var(--accent-color);
+.category-dropdown .dropdown-menu {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px var(--shadow-color);
+  z-index: 1100;
 }
 
-/* User Dropdown Menu */
-.navbar .user-section .user-menu .dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: white;
-  color: black;
+/* Sidebar styling */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: -260px;
+  background-color: var(--primary-color);
+  transition: left 0.3s ease-in-out;
+  box-shadow: 4px 0 8px var(--shadow-color);
+  z-index: 1050;
+}
+
+.sidebar-open {
+  left: 0;
+}
+
+.sidebar-closed {
+  left: -260px;
+}
+
+/* Overlay for sidebar */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Responsive settings */
+@media (max-width: 992px) {
+  .navbar-upper,
+  .navbar-lower {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-container,
+  .category-dropdown {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Dropdown adjustments */
+.dropdown-menu {
   box-shadow: 0 4px 8px var(--shadow-color);
-  border-radius: 6px;
-  width: 200px;
-  display: none;
-  transition: all 0.3s ease-in-out;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.navbar .user-section .user-menu:hover .dropdown {
-  display: block;
-}
-
-.navbar .user-section .user-menu .dropdown a {
-  padding: 0.75rem;
-  text-decoration: none;
-  display: block;
-  color: black;
-  transition: background-color 0.3s ease;
-}
-
-.navbar .user-section .user-menu .dropdown a:hover {
+.dropdown-item:hover {
   background-color: var(--light-gray);
 }
 
-/* Login Link */
-.navbar .user-section .login-link {
+/* Button styles */
+button,
+.btn-outline-light {
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out, transform 0.2s;
+}
+
+button:hover,
+.btn-outline-light:hover {
+  background-color: var(--accent-color);
   color: white;
-  text-decoration: underline;
-  font-size: 1rem;
-  transition: color 0.3s ease;
+  transform: translateY(-2px);
 }
 
-.navbar .user-section .login-link:hover {
-  color: var(--accent-color);
+/* Search suggestions */
+.list-group-item {
+  cursor: pointer;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .navbar {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 1rem;
-  }
-
-  .navbar .search-container {
-      width: 100%;
-      margin-top: 1rem;
-  }
-
-  .navbar .user-section {
-      width: 100%;
-      justify-content: space-between;
-      margin-top: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-      font-size: 0.875rem;
-  }
-
-  .navbar .logo {
-      font-size: 1.25rem;
-  }
-
-  .navbar .search-container input {
-      padding: 0.4rem;
-  }
-}
-
-/* Fade In Animation */
-@keyframes fadeIn {
-  from {
-      opacity: 0;
-      transform: translateY(-5px);
-  }
-  to {
-      opacity: 1;
-      transform: translateY(0);
-  }
+.list-group-item:hover {
+  background-color: var(--light-gray);
 }
