@@ -26,12 +26,38 @@ export const registerUser = createAsyncThunk(
 // Login User
 export const loginUser = createAsyncThunk("auth/loginUser", async (userData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, userData, { withCredentials: true });
+    const response = await axios.post(
+      `${API_URL}/auth/login`,
+      userData,
+      { 
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" } 
+      }
+    );
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.message || error.message || "Login failed");
+    const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+    const action = error.response?.data?.action || null;
+
+    return rejectWithValue({ message: errorMessage, action });
   }
 });
+
+//resend verification email
+export const resendVerificationEmail = createAsyncThunk(
+  "auth/resendVerificationEmail",
+  async (email, { rejectWithValue }) => {
+      try {
+          const response = await axios.post(`${API_URL}/auth/resend-verification`, { email });
+          return response.data;
+      } catch (error) {
+        console.log(error.response?.data?.message || "Failed to send verification email.");
+          return rejectWithValue(error.response?.data?.message || "Failed to send verification email.");
+      }
+  }
+);
+
+
 
 // Logout User
 export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { rejectWithValue }) => {

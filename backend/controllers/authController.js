@@ -62,26 +62,33 @@ exports.verifyEmail = async (req, res) => {
   
     } catch (error) {
       res.status(500).json({ message: "Error verifying email", error: error.message });
+      console.error('Error verifying email', error.message);
     }
   };
 
-exports.login = async (req, res) => {
+  exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
+            return res.status(400).json({ message: "Email and password are required." });
         }
 
         const user = await User.findByEmail(email);
         if (!user) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid email or password." });
         }
-        if (!user.is_verified) return res.status(403).json({ message: "Please verify your email before logging in" });
+
+        if (!user.is_verified) {
+            return res.status(403).json({ 
+                message: "Your account is not verified. Please check your email.", 
+                action: "verify"
+            });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid email or password." });
         }
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -89,13 +96,43 @@ exports.login = async (req, res) => {
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000, 
+            sameSite: "Lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
         res.json({ message: "Login successful", user });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error. Please try again later." });
+    }
+};
+
+
+exports.resendVerificationEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+        console.log('resendVerificationEmail', email);
+        if (!email) {
+            return res.status(400).json({ message: "Email is required." });
+        }
+
+        const user = await User.findByEmail(email);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        if (user.is_verified) {
+            return res.status(400).json({ message: "Your account is already verified." });
+        }
+        
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+
+        const verificationLink = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
+        await sendVerificationEmail(email, verificationLink);
+
+        res.status(200).json({ message: "Verification email sent successfully." });
+    } catch (error) {
+        res.status(500).json({ message: "Error sending verification email.", error: error.message });
+        console.error('Error verifying email', error.message);
     }
 };
 

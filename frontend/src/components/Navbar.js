@@ -5,7 +5,6 @@ import { fetchCategories } from "../redux/productSlice";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import "../assets/css/Navbar.css";
-import "../assets/css/sidebar.css";
 import { logoutUser } from "../redux/authSlice";
 import NotificationBell from "./NotificationBell";
 import Sidebar from "./Sidebar";
@@ -81,43 +80,57 @@ const Navbar = () => {
         </div>
       </nav>
 
-      <nav className="navbar-lower d-flex justify-content-between align-items-center w-100 py-2 flex-column flex-md-row">
+      <nav className="navbar-lower w-100">
         
-        {/* Enhanced Search Bar */}
-        <div className="search-container position-relative w-50 w-md-50 me-md-3 mb-2 mb-md-0">
-          <div className="position-relative">
-            <input
-              type="text"
-              className="form-control ps-4"
-              placeholder="Search for products..."
-              value={search}
-              onChange={handleSearch}
-            />
-            <FaSearch className="position-absolute top-50 start-0 ms-2 translate-middle text-muted" />
-            {search && (
-              <FaTimes className="position-absolute top-50 end-0 me-2 translate-middle text-danger cursor-pointer" onClick={clearSearch} />
-            )}
-          </div>
+      <div className="col-auto">
+      <button
+        className="btn toggle-sidebar-btn"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        style={{ backgroundColor: "#1e88e5", color: "white" }}
+      >
+        <BsList size={28} />
+      </button>
+      </div>
+        {/* Search Bar */}
+        <div className="search-container position-relative">
+  <div className="search-wrapper">
+    {/* Search Icon (Left) */}
+    <FaSearch className="search-icon search-icon-left" />
 
-          {/* Search Suggestions */}
-          {filteredItems.length > 0 && (
-            <ul className="list-group position-absolute w-100 shadow-sm mt-1">
-              {filteredItems.map((item, index) => (
-                <li key={index} className="list-group-item">
-                  <Link
-                    to={`/category/${item}`}
-                    className="text-decoration-none text-dark"
-                    onClick={clearSearch}
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+    {/* Search Input */}
+    <input
+      type="text"
+      className="form-control search-input"
+      placeholder="Search for products..."
+      value={search}
+      onChange={handleSearch}
+    />
 
-        {/* Dynamic Category Dropdown */}
+    {/* Clear Search Icon (Right) */}
+    {search && (
+      <FaTimes className="search-icon search-icon-right" onClick={clearSearch} />
+    )}
+  </div>
+
+  {/* Search Suggestions */}
+  {filteredItems.length > 0 && (
+    <ul className="list-group position-absolute w-100 shadow-sm mt-1">
+      {filteredItems.map((item, index) => (
+        <li key={index} className="list-group-item">
+          <Link
+            to={`/category/${item}`}
+            className="text-decoration-none text-dark"
+            onClick={clearSearch}
+          >
+            {item}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+        {/* Category Dropdown */}
         <div className="dropdown category-dropdown">
           <button
             className="btn btn-outline-light dropdown-toggle"
@@ -144,14 +157,6 @@ const Navbar = () => {
             )}
           </ul>
         </div>
-
-        <button
-          className="btn toggle-sidebar-btn me-3"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          style={{ backgroundColor: "#1e88e5", color: "white" }}
-        >
-          <BsList size={28} />
-        </button>
       </nav>
 
       {/* Sidebar */}

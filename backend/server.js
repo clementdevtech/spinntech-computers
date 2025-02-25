@@ -11,8 +11,14 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 const server = express();
+
+server.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
 server.use(morgan('dev'));
-server.use(cors());
 server.use(express.json());
 server.use('/', app);
 
