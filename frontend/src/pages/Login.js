@@ -16,12 +16,18 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showVerifyButton, setShowVerifyButton] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
     setShowVerifyButton(false);
     setEmailSent(false);
+
+    if (!email || !password) {
+      setErrorMessage("Email and password are required.");
+      return;
+      }
 
     const result = await dispatch(loginUser({ email, password }));
 
@@ -36,13 +42,27 @@ const Login = () => {
   };
 
   const handleResendVerification = async () => {
-    setErrorMessage(""); 
+    if (cooldown > 0) return;
+
+    setErrorMessage("");
     setEmailSent(false);
 
     const result = await dispatch(resendVerificationEmail(email));
 
     if (resendVerificationEmail.fulfilled.match(result)) {
       setEmailSent(true);
+      setCooldown(60);
+
+      // Countdown function
+      const countdownInterval = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
       setErrorMessage(result.payload || "Failed to resend verification email.");
     }
@@ -59,8 +79,12 @@ const Login = () => {
         {/* Show Resend Verification Button */}
         {showVerifyButton && (
           <div className="mt-2">
-            <button className="btn btn-warning w-100" onClick={handleResendVerification}>
-              Resend Verification Email
+            <button
+              className="btn btn-warning w-100"
+              onClick={handleResendVerification}
+              disabled={cooldown > 0}
+            >
+              {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend Verification Email"}
             </button>
           </div>
         )}

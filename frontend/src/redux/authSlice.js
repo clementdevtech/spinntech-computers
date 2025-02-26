@@ -8,11 +8,7 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const userPayload = {
-        ...userData,
-        password: String(userData.password),
-      };
-
+      const userPayload = { ...userData, password: String(userData.password) };
       const response = await axios.post(`${API_URL}/auth/register`, userPayload);
       return response.data;
     } catch (error) {
@@ -21,76 +17,82 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-
-
 // Login User
-export const loginUser = createAsyncThunk("auth/loginUser", async (userData, { rejectWithValue }) => {
-  try {
-    const response = await axios.post(
-      `${API_URL}/auth/login`,
-      userData,
-      { 
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" } 
-      }
-    );
-    return response.data;
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
-    const action = error.response?.data?.action || null;
-
-    return rejectWithValue({ message: errorMessage, action });
-  }
-});
-
-//resend verification email
-export const resendVerificationEmail = createAsyncThunk(
-  "auth/resendVerificationEmail",
-  async (email, { rejectWithValue }) => {
-      try {
-          const response = await axios.post(`${API_URL}/auth/resend-verification`, { email });
-          return response.data;
-      } catch (error) {
-        console.log(error.response?.data?.message || "Failed to send verification email.");
-          return rejectWithValue(error.response?.data?.message || "Failed to send verification email.");
-      }
+export const loginUser = createAsyncThunk(
+  "auth/loginUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/login`,
+        userData,
+        { 
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" } 
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      const action = error.response?.data?.action || null;
+      return rejectWithValue({ message: errorMessage, action });
+    }
   }
 );
 
-
+// Resend Verification Email
+export const resendVerificationEmail = createAsyncThunk(
+  "auth/resendVerificationEmail",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/resend-verification`, { email });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to send verification email.");
+    }
+  }
+);
 
 // Logout User
-export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { rejectWithValue }) => {
-  try {
-    await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
-    return null;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || error.message || "Logout failed");
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+      return null;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message || "Logout failed");
+    }
   }
-});
+);
 
 // Update Profile
-export const updateProfile = createAsyncThunk("auth/updateProfile", async (userData, { rejectWithValue, getState }) => {
-  try {
-    const token = getState().auth.user?.token;
-    const response = await axios.put(`${API_URL}/update-profile`, userData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || error.message || "Profile update failed");
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (userData, { rejectWithValue, getState }) => {
+    try {
+      const token = getState().auth.user?.token;
+      const response = await axios.put(`${API_URL}/update-profile`, userData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message || "Profile update failed");
+    }
   }
-});
+);
 
 // Reset Password
-export const resetPassword = createAsyncThunk("auth/resetPassword", async ({ token, newPassword }, { rejectWithValue }) => {
-  try {
-    const response = await axios.post(`${API_URL}/auth/reset-password`, { token, newPassword });
-    return response.data.message;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || error.message || "Password reset failed");
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, { token, newPassword });
+      return response.data.message;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message || "Password reset failed");
+    }
   }
-});
+);
 
 // Authentication Slice
 const authSlice = createSlice({
@@ -118,7 +120,10 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = {
+          ...action.payload.user,
+          token: action.payload.token,
+        };
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -132,7 +137,10 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = {
+          ...action.payload.user, 
+          token: action.payload.token,
+        };
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

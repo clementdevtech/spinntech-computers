@@ -1,36 +1,95 @@
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background: #343a40;
-    transition: transform 0.3s ease-in-out;
+/* Root variables for colors */
+:root {
+  --sidebar-bg: #1a202c;
+  --sidebar-text: #ffffff;
+  --sidebar-hover: #4f46e5;
+  --sidebar-active: #6366f1;
+  --sidebar-border: #374151;
+  --sidebar-highlight: #9ca3af;
+  --sidebar-danger: #e3342f;
+}
+
+/* Sidebar container */
+aside {
+  width: 260px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Sidebar links */
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  color: var(--sidebar-text);
+  text-decoration: none;
+}
+
+nav a:hover {
+  background: var(--sidebar-hover);
+  color: white;
+}
+
+nav a.active {
+  background: var(--sidebar-active);
+  font-weight: bold;
+}
+
+/* Section headers */
+.text-sm {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--sidebar-highlight);
+  margin-top: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+/* Logout Button */
+button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--sidebar-text);
+  font-size: 16px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  color: var(--sidebar-danger);
+  background: rgba(227, 52, 47, 0.2);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  aside {
+    width: 220px;
+    padding: 1rem;
   }
   
-  .sidebar-open {
-    transform: translateX(0);
+  nav a {
+    font-size: 14px;
+    padding: 10px;
   }
-  
-  .sidebar-closed {
-    transform: translateX(-250px);
+
+  button {
+    font-size: 14px;
+    padding: 10px;
   }
-  
-  .main-content {
-    margin-left: 250px;
-    width: calc(100% - 250px);
-    transition: margin-left 0.3s ease-in-out;
-  }
-  
-  @media (max-width: 992px) {
-    .sidebar {
-      transform: translateX(-250px);
-    }
-    .sidebar-open {
-      transform: translateX(0);
-    }
-    .main-content {
-      margin-left: 0;
-    }
-  }
-  
+}
