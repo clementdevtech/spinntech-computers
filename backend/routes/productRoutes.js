@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController");
 const { verifyToken, isAdmin } = require("../middlewares/authMiddleware");
+const upload = require("../middlewares/upload");
 
 //Public Product Routes (Accessible to All Users)
 router.get("/products", productController.getAllProducts);
