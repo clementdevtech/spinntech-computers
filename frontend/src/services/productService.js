@@ -48,3 +48,46 @@ export const fetchProductsByCategory = async (category) => {
     return [];
   }
 };
+
+
+// Add a new product
+export const addProduct = async (productData) => {
+  const formData = new FormData();
+  Object.keys(productData).forEach((key) => {
+    if (key === "images") {
+      productData.images.forEach((image) => formData.append("images", image));
+    } else {
+      formData.append(key, productData[key]);
+    }
+  });
+
+  const response = await fetch(`${API_BASE_URL}/products/products`, {
+    method: "POST",
+    body: formData,
+  });
+
+  return await response.json();
+};
+
+// Update a product
+export const updateProduct = async (id, productData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/products/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(productData),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating product:", error);
+  }
+};
+
+// Delete a product
+export const deleteProduct = async (id) => {
+  try {
+    await fetch(`${API_BASE_URL}/products/products/${id}`, { method: "DELETE" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+  }
+};

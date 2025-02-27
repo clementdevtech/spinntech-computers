@@ -13,15 +13,19 @@ import Profile from "./pages/Profile";
 import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
 import Affiliate from "./pages/Affiliate";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminPanel from "./pages/AdminPanel";
+import OrderManagement from "./pages/OrderManagement";
+import ProductManager from "./pages/ProductManagement";
+import UserManagement from "./pages/UserManagement";
+import AdminRoles from "./pages/AdminRoles";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import { Outlet } from "react-router-dom";
 import './index.css';
-
 
 function App() {
   return (
@@ -29,27 +33,46 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} /> 
+          {/* General Routes */}
+          <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/affiliate" element={<Affiliate />} />
-          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/chat-support" element={<ChatSupport />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/payment" element={<Payment />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+
+          {/* ✅ Updated Nested Admin Routes */}
+          <Route path="/admin/*" element={<AdminLayout />}>
+            <Route index element={<AdminPanel />} />
+            <Route path="manage-orders" element={<OrderManagement />} />
+            <Route path="manage-products" element={<ProductManager />} />
+            <Route path="manage-users" element={<UserManagement />} />
+            <Route path="admin-roles" element={<AdminRoles />} />
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Router>
     </Provider>
+  );
+}
+
+/** ✅ Admin Layout Component to Load Child Routes */
+function AdminLayout() {
+  return (
+    <div>
+      <h1>Admin Dashboard</h1>
+      <Outlet /> {/* ✅ Renders child routes inside admin */}
+    </div>
   );
 }
 

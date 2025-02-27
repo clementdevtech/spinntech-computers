@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../redux/authSlice";
-import { Home, User, ShoppingCart, DollarSign, Bell, Users, LogOut, Shield, Heart, HelpCircle, Settings, Package, Headphones, X } from "lucide-react";
+import { Home, User, ShoppingCart, DollarSign, Bell, Users, LogOut, Shield, Heart, HelpCircle, Settings, Headphones, X } from "lucide-react";
 import "../assets/css/sidebar.css";
 
 const Sidebar = ({ closeSidebar }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const token = user?.token;
+
+  useEffect(() => {
+    if (token) {
+
+    }
+  }, [token]);
 
   return (
     <aside className="bg-dark text-white vh-100 p-4">
@@ -19,6 +26,8 @@ const Sidebar = ({ closeSidebar }) => {
         </button>
       </div>
 
+       {/* Scrollable Content */}
+    <div className="sidebar-content flex-grow-1 overflow-auto p-3">
       <nav className="d-flex flex-column">
         {/* General Links */}
         <Link to="/" className="sidebar-link" onClick={closeSidebar}>
@@ -84,24 +93,9 @@ const Sidebar = ({ closeSidebar }) => {
               <>
                 <div className="text-secondary text-uppercase small mt-4 mb-2">Admin Panel</div>
 
-                <Link to="/adminpanel" className="sidebar-link" onClick={closeSidebar}>
+                <Link to="/admin" className="sidebar-link" onClick={closeSidebar}>
                   <Shield size={20} />
                   <span>Admin Panel</span>
-                </Link>
-
-                <Link to="/manage-products" className="sidebar-link" onClick={closeSidebar}>
-                  <Package size={20} />
-                  <span>Manage Products</span>
-                </Link>
-
-                <Link to="/manage-users" className="sidebar-link" onClick={closeSidebar}>
-                  <Users size={20} />
-                  <span>Manage Users</span>
-                </Link>
-
-                <Link to="/manage-orders" className="sidebar-link" onClick={closeSidebar}>
-                  <ShoppingCart size={20} />
-                  <span>Manage Orders</span>
                 </Link>
               </>
             )}
@@ -126,6 +120,7 @@ const Sidebar = ({ closeSidebar }) => {
           </Link>
         )}
       </nav>
+      </div>
     </aside>
   );
 };

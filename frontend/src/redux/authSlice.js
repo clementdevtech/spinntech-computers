@@ -3,6 +3,9 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+
+const storedUser = JSON.parse(localStorage.getItem("user")) || null;
+
 // Register User
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
@@ -30,11 +33,27 @@ export const loginUser = createAsyncThunk(
           headers: { "Content-Type": "application/json" } 
         }
       );
+      localStorage.setItem("user", JSON.stringify(response.data.user)); // Persist user
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
       const action = error.response?.data?.action || null;
       return rejectWithValue({ message: errorMessage, action });
+    }
+  }
+);
+
+// Check if User is Authenticated
+export const checkAuthStatus = createAsyncThunk(
+  "auth/checkAuthStatus",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/auth/me`, { withCredentials: true });
+      localStorage.setItem("user", JSON.stringify(response.data.user)); // Persist user
+      return response.data.user;
+    } catch (error) {
+      localStorage.removeItem("user"); // Remove user if session expired
+      return rejectWithValue("User not authenticated");
     }
   }
 );
@@ -58,6 +77,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+      localStorage.removeItem("user"); // Remove user from storage on logout
       return null;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message || "Logout failed");
@@ -68,12 +88,19 @@ export const logoutUser = createAsyncThunk(
 // Update Profile
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
-  async (userData, { rejectWithValue, getState }) => {
+  async (userData, { rejectWithValue }) => {
     try {
-      const token = getState().auth.user?.token;
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const token = storedUser?.token;
+      if (!token) throw new Error("Unauthorized");
+
       const response = await axios.put(`${API_URL}/update-profile`, userData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      const updatedUser = { ...storedUser, ...response.data };
+      localStorage.setItem("user", JSON.stringify(updatedUser)); // Persist updated user
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message || "Profile update failed");
@@ -98,7 +125,7 @@ export const resetPassword = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    user: storedUser,
     loading: false,
     error: null,
     successMessage: null,
@@ -113,6 +140,20 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Check Auth Status Cases
+      .addCase(checkAuthStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(checkAuthStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(checkAuthStatus.rejected, (state) => {
+        state.loading = false;
+        state.user = null;
+      })
+
       // Login Cases
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
@@ -120,10 +161,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = {
-          ...action.payload.user,
-          token: action.payload.token,
-        };
+        state.user = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -137,10 +175,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = {
-          ...action.payload.user, 
-          token: action.payload.token,
-        };
+        state.user = action.payload.user;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

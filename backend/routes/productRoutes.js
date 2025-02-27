@@ -9,8 +9,8 @@ router.get("/categories", productController.getCategories);
 router.get("/:id", productController.getProductById);
 
 //Admin Product Management (Protected)
-router.post("/", verifyToken, isAdmin, productController.createProduct);
-router.put("/:id", verifyToken, isAdmin, productController.updateProduct);
+router.post("/", verifyToken, upload.array("images", 5), isAdmin, productController.createProduct);
+router.put("/:id", verifyToken, upload.array("images", 5), isAdmin, productController.updateProduct);
 router.delete("/:id", verifyToken, isAdmin, productController.deleteProduct);
 
 module.exports = router;

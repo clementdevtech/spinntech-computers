@@ -57,25 +57,6 @@ nav a.active {
 }
 
 /* Logout Button */
-button {
-  width: 100%;
-  background: none;
-  border: none;
-  color: var(--sidebar-text);
-  font-size: 16px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-
-button:hover {
-  color: var(--sidebar-danger);
-  background: rgba(227, 52, 47, 0.2);
-}
-
 .sidebar-menu::-webkit-scrollbar {
   width: 5px;
 }
@@ -97,11 +78,6 @@ button:hover {
   }
   
   nav a {
-    font-size: 14px;
-    padding: 10px;
-  }
-
-  button {
     font-size: 14px;
     padding: 10px;
   }
