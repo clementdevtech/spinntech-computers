@@ -19,6 +19,7 @@ const getAllProducts = async (req, res) => {
     
     res.json({ products, total: total[0].count });
   } catch (error) {
+    console.log('Error in getting all products', error.message);
     res.status(500).json({ message: "Error fetching products", error });
   }
 };
@@ -31,6 +32,7 @@ const getProductById = async (req, res) => {
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: "Error fetching product", error });
+    console.log('Error in getting a single product', error.message);
   }
 };
 
@@ -61,6 +63,7 @@ const createProduct = async (req, res) => {
 
     res.status(201).json(newProduct);
   } catch (error) {
+    console.log('Error in adding a product', error.message);
     res.status(500).json({ message: "Error creating product", error });
   }
 };
@@ -93,6 +96,7 @@ const updateProduct = async (req, res) => {
 
     res.json(updatedProduct);
   } catch (error) {
+    console.log('Error in updating a product', error.message);
     res.status(500).json({ message: "Error updating product", error });
   }
 };
@@ -121,6 +125,7 @@ const deleteProduct = async (req, res) => {
     
     res.json({ message: "Product and images deleted successfully" });
   } catch (error) {
+    console.log('Error in deleting a product', error.message);
     res.status(500).json({ message: "Error deleting product", error });
   }
 };

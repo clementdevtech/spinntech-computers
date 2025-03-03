@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../assets/css/Footer.css";
 import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 
 const Footer = () => {
   return (
     <footer className="bg-dark text-white py-5 mt-5">
       <div className="container">
-        <div className="row">
+        <div className="footer-container">
           {/* Quick Links */}
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold">Quick Links</h5>

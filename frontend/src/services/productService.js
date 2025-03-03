@@ -1,10 +1,9 @@
-// src/services/productService.js
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL
 
 // Fetch all products
 export const fetchProducts = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/products`);
+    const response = await fetch(`${API_BASE_URL}/products`);
     if (!response.ok) throw new Error("Failed to fetch products");
     return await response.json();
   } catch (error) {
@@ -49,7 +48,6 @@ export const fetchProductsByCategory = async (category) => {
   }
 };
 
-
 // Add a new product
 export const addProduct = async (productData) => {
   const formData = new FormData();
@@ -61,10 +59,12 @@ export const addProduct = async (productData) => {
     }
   });
 
-  const response = await fetch(`${API_BASE_URL}/products/products`, {
+  const response = await fetch(`${API_BASE_URL}/products/createproduct`, {
     method: "POST",
     body: formData,
-  });
+    credentials: "include",
+});
+
 
   return await response.json();
 };
@@ -72,10 +72,11 @@ export const addProduct = async (productData) => {
 // Update a product
 export const updateProduct = async (id, productData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/products/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/products/updateproduct/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(productData),
+      credentials: "include",
     });
     return await response.json();
   } catch (error) {
@@ -86,7 +87,7 @@ export const updateProduct = async (id, productData) => {
 // Delete a product
 export const deleteProduct = async (id) => {
   try {
-    await fetch(`${API_BASE_URL}/products/products/${id}`, { method: "DELETE" });
+    await fetch(`${API_BASE_URL}/products/delete/${id}`, { method: "DELETE", credentials: "include" });
   } catch (error) {
     console.error("Error deleting product:", error);
   }

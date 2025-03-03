@@ -3,6 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
 const app = require('./app');
+const cookieParser = require("cookie-parser");
+
+
 const WebSocket = require('ws');
 
 dotenv.config();
@@ -31,6 +34,7 @@ server.use(cors({
 
 server.use(morgan('dev'));
 server.use(express.json());
+server.use(cookieParser());
 server.use('/', app);
 
 // Start HTTP Server

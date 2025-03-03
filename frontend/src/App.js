@@ -25,7 +25,6 @@ import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { Outlet } from "react-router-dom";
-import './index.css';
 
 function App() {
   return (
