@@ -14,6 +14,7 @@ import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
 import Affiliate from "./pages/Affiliate";
 import AdminPanel from "./pages/AdminPanel";
+import AdminChat from "./pages/AdminChat";
 import OrderManagement from "./pages/OrderManagement";
 import ProductManager from "./pages/ProductManagement";
 import UserManagement from "./pages/UserManagement";
@@ -54,6 +55,7 @@ function App() {
             <Route path="manage-orders" element={<OrderManagement />} />
             <Route path="manage-products" element={<ProductManager />} />
             <Route path="manage-users" element={<UserManagement />} />
+            <Route path="admin-chat" element={<AdminChat />} />
             <Route path="admin-roles" element={<AdminRoles />} />
           </Route>
 

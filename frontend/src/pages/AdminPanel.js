@@ -4,7 +4,7 @@ import Dashboard from "./Dashboard";
 import ProductManagement from "../pages/ProductManagement";
 import UserManagement from "../pages/UserManagement";
 import OrderManagement from "../pages/OrderManagement";
-import ChatSupport from "../pages/ChatSupport";
+import AdminChat from "../pages/AdminChat";
 import AdminRoles from "../pages/AdminRoles";
 import AffiliateDashboard from "../components/AffiliateDashboard";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -22,7 +22,7 @@ const AdminPanel = () => {
           <NavLink to="manage-products" className="nav-link">Manage Products</NavLink>
           <NavLink to="manage-users" className="nav-link">Manage Users</NavLink>
           <NavLink to="manage-orders" className="nav-link">Manage Orders</NavLink>
-          <NavLink to="chat" className="nav-link">Chat Support</NavLink>
+          <NavLink to="admin-chat" className="nav-link">Admin Chat</NavLink>
           <NavLink to="affiliates" className="nav-link">Affiliate Dashboard</NavLink>
           <NavLink to="admin-roles" className="nav-link">Admin Roles</NavLink>
         </nav>
@@ -35,7 +35,7 @@ const AdminPanel = () => {
           <Route path="products" element={<ProductManagement />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="orders" element={<OrderManagement />} />
-          <Route path="chat" element={<ChatSupport />} />
+          <Route path="admin-chat" element={<AdminChat />} />
           <Route path="affiliates" element={<AffiliateDashboard />} />
           <Route path="admin-roles" element={<AdminRoles />} />
         </Routes>
