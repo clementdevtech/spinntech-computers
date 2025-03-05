@@ -5,6 +5,7 @@ import { fetchCategories } from "../services/productService";
 import { Link } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import { FaFilter, FaComments } from "react-icons/fa";
+import ChatSupport from "../components/ChatSupport";
 import Loader from "../components/ui/Loader";
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -143,14 +145,19 @@ const Home = () => {
           )}
         </Container>
 
-        {/* Chat Button */}
-        <div className="position-fixed bottom-0 end-0 m-3">
-          <Link to="/chat-support">
-            <Button variant="info" className="p-3 shadow-lg">
-              <FaComments size={24} /> Chat Support
-            </Button>
-          </Link>
+       {/* Chat Button */}
+       <div className="position-fixed bottom-0 end-0 m-3">
+          <Button
+            variant="info"
+            className="p-3 shadow-lg"
+            onClick={() => setIsChatOpen(!isChatOpen)}
+          >
+            <FaComments size={24} /> {isChatOpen ? "Close Chat" : "Chat Support"}
+          </Button>
         </div>
+
+        {/* Chat Panel */}
+        <ChatSupport isOpen={isChatOpen} toggleChat={() => setIsChatOpen(false)} />
       </div>
     </>
   );

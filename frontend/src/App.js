@@ -8,7 +8,6 @@ import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
 import Dashboard from "./pages/Dashboard";
-import ChatSupport from "./pages/ChatSupport";
 import Profile from "./pages/Profile";
 import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
@@ -41,7 +40,6 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/affiliate" element={<Affiliate />} />
-          <Route path="/chat-support" element={<ChatSupport />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/payment" element={<Payment />} />
