@@ -13,7 +13,7 @@ const ProductListing = () => {
   useEffect(() => {
     dispatch(fetchProducts());
     dispatch(fetchCategories());
-  }, [dispatch]);
+  }, [dispatch, products]);
 
   const filteredProducts = products.filter((product) => {
     const inPriceRange = product.price >= priceRange[0] && product.price <= priceRange[1];

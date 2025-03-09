@@ -6,6 +6,7 @@ const path = require("path");
 
 // Get all products with pagination & search
 const getAllProducts = async (req, res) => {
+  console.log('products requested');
   try {
     const { page = 1, limit = 10, search = "" } = req.query;
     const offset = (page - 1) * limit;
@@ -27,12 +28,14 @@ const getAllProducts = async (req, res) => {
 // Get a single product by ID
 const getProductById = async (req, res) => {
   try {
-    const product = await db("products").where({ id: req.params.id }).first();
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    const { id } = req.params;
+    const product = await db("products").where({ id }).first();
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: "Error fetching product", error });
-    console.log('Error in getting a single product', error.message);
   }
 };
 

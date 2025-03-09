@@ -6,12 +6,18 @@ const API_BASE_URL = process.env.REACT_APP_API_URL
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/products`);
-    return response.data.length ? response.data : [];
+    if (response.data && Array.isArray(response.data.products)) {
+      return response.data.products;
+    } else {
+      console.error("Error: Expected an array but got", response.data);
+      return [];
+    }
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
   }
 });
+
 
 export const fetchCategories = createAsyncThunk("categories/fetchCategories", async () => {
   try {
@@ -22,6 +28,12 @@ export const fetchCategories = createAsyncThunk("categories/fetchCategories", as
     return [];
   }
 });
+
+export const addProduct = createAsyncThunk("products/addProduct", async (productData, { dispatch }) => {
+  await axios.post(`${API_BASE_URL}/products/createproduct`, productData);
+  dispatch(fetchProducts());
+});
+
 
 const productSlice = createSlice({
   name: "products",

@@ -6,13 +6,14 @@ import { addToCart } from "../redux/cartSlice";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
-  const placeholderImage = "https://via.placeholder.com/150"; // Placeholder if no image
-
+  const placeholderImage = require("../assets/images/product.png");
+  const imageArray = typeof product.image === "string" ? JSON.parse(product.image) : product.image;
+  const imageUrl = product.image?.[0] ? require(`../assets/products/${imageArray[0].split('/').pop()}`) : placeholderImage;
   return (
     <Card className="shadow-sm border rounded-lg p-3">
       <Card.Img
         variant="top"
-        src={product.image || placeholderImage}
+        src={imageUrl}
         alt={product.name}
         className="h-48 object-cover rounded"
       />

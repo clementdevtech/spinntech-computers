@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
+import ProductDetails from "./pages/ProductDetails";
 import Affiliate from "./pages/Affiliate";
 import AdminPanel from "./pages/AdminPanel";
 import AdminChat from "./pages/AdminChat";
@@ -43,6 +44,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />

@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../redux/productSlice";
 import { fetchCategories } from "../services/productService";
 import { Link } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { FaFilter, FaComments } from "react-icons/fa";
 import ChatSupport from "../components/ChatSupport";
 import Loader from "../components/ui/Loader";
+import ProductCard from "../components/ProductCard"; // ✅ Import ProductCard
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -27,8 +28,11 @@ const Home = () => {
     setCategories(response);
   };
 
+  // ✅ Ensure `products` is always an array
+  const safeProducts = Array.isArray(products) ? products : [];
+
   // Filter products based on selected category and price range
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = safeProducts.filter((product) => {
     const withinPriceRange =
       product.price >= priceRange[0] && product.price <= priceRange[1];
     const matchesCategory = selectedCategory
@@ -46,18 +50,14 @@ const Home = () => {
             <h1 className="display-4 fw-bold">Find the Best Deals Here!</h1>
             <p className="lead">Shop the most recent and best-priced commodities.</p>
             <Link to="/shop">
-              <Button variant="warning" size="lg">
-                Shop Now
-              </Button>
+              <Button variant="warning" size="lg">Shop Now</Button>
             </Link>
           </Container>
         </section>
 
         {/* Filters Section */}
         <Container className="my-4">
-          <h2 className="text-center mb-4">
-            <FaFilter /> Filter Products
-          </h2>
+          <h2 className="text-center mb-4"><FaFilter /> Filter Products</h2>
           <Row className="justify-content-center">
             <Col md={4}>
               <Form.Group controlId="categorySelect">
@@ -68,9 +68,7 @@ const Home = () => {
                 >
                   <option value="">All Categories</option>
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
+                    <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -101,16 +99,7 @@ const Home = () => {
                 .slice(0, 4)
                 .map((product) => (
                   <Col md={3} key={product.id} className="mb-4">
-                    <Card className="shadow-sm">
-                      <Card.Img variant="top" src={product.image} />
-                      <Card.Body>
-                        <Card.Title>{product.name}</Card.Title>
-                        <Card.Text>${product.price}</Card.Text>
-                        <Link to={`/product/${product.id}`}>
-                          <Button variant="primary">View</Button>
-                        </Link>
-                      </Card.Body>
-                    </Card>
+                    <ProductCard product={product} />
                   </Col>
                 ))}
             </Row>
@@ -129,24 +118,31 @@ const Home = () => {
                 .slice(0, 4)
                 .map((product) => (
                   <Col md={3} key={product.id} className="mb-4">
-                    <Card className="shadow-sm">
-                      <Card.Img variant="top" src={product.image} />
-                      <Card.Body>
-                        <Card.Title>{product.name}</Card.Title>
-                        <Card.Text>${product.price}</Card.Text>
-                        <Link to={`/product/${product.id}`}>
-                          <Button variant="success">View</Button>
-                        </Link>
-                      </Card.Body>
-                    </Card>
+                    <ProductCard product={product} />
                   </Col>
                 ))}
             </Row>
           )}
         </Container>
 
-       {/* Chat Button */}
-       <div className="position-fixed bottom-0 end-0 m-3">
+        {/* View All Products */}
+        <Container className="my-5">
+          <h2 className="text-center mb-4">All Products</h2>
+          {loading ? (
+            <Loader />
+          ) : (
+            <Row>
+              {filteredProducts.map((product) => (
+                <Col md={3} key={product.id} className="mb-4">
+                  <ProductCard product={product} />
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Container>
+
+        {/* Chat Button */}
+        <div className="position-fixed bottom-0 end-0 m-3">
           <Button
             variant="info"
             className="p-3 shadow-lg"
