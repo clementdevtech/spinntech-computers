@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const FALLBACK_IMAGE = require("/assets/images/default-product.jpg"); // Fallback image
+const FALLBACK_IMAGE = require("../assets/images/product.png"); // Fallback image
 
 const ProductDetails = () => {
   const { id } = useParams();
