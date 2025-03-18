@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const FALLBACK_IMAGE = require("../assets/images/product.png"); // Fallback image
+const FALLBACK_IMAGE = require("../assets/images/product.png");
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -14,21 +14,20 @@ const ProductDetails = () => {
   const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(FALLBACK_IMAGE);
+  const [quantity, setQuantity] = useState(1);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
 
   // Fetch product details
   const fetchProduct = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/products/${id}`);
       setProduct(response.data);
-
-      // Ensure image array is valid & set the first image as default
-      const imageArray = Array.isArray(response.data.image) ? response.data.image : JSON.parse(response.data.image || "[]");
-      setSelectedImage(imageArray.length > 0 ? imageArray[0] : FALLBACK_IMAGE);
+      const images = Array.isArray(response.data.image) ? response.data.image : JSON.parse(response.data.image || "[]");
+      setSelectedImage(images.length > 0 ? images[0] : FALLBACK_IMAGE);
     } catch (error) {
       console.error("Error fetching product:", error);
     } finally {
@@ -86,9 +85,7 @@ const ProductDetails = () => {
       <Row className="mb-4">
         <Col>
           <h2 className="text-3xl font-bold">{product.name}</h2>
-          <p className="text-lg text-gray-700 mt-2">
-            {product.shortDescription || "A high-quality product with exceptional features."}
-          </p>
+          <p className="text-lg text-gray-700 mt-2">{product.shortDescription || "A high-quality product."}</p>
         </Col>
       </Row>
 
@@ -102,21 +99,19 @@ const ProductDetails = () => {
               src={selectedImage}
               alt={product.name}
               className="w-100 h-auto rounded"
-              style={{ maxHeight: "300px", objectFit: "contain" }}
-              onError={(e) => (e.target.src = FALLBACK_IMAGE)} // Set fallback if image fails
+              style={{ maxHeight: "350px", objectFit: "contain" }}
+              onError={(e) => (e.target.src = FALLBACK_IMAGE)}
             />
           </Card>
 
           {/* Scrollable Image Row */}
-          <div className="mt-3 overflow-x-auto flex gap-2 scrollbar-hide" style={{ whiteSpace: "nowrap" }}>
+          <div className="mt-3 overflow-x-auto d-flex gap-2">
             {imageArray.map((img, index) => (
               <img
                 key={index}
                 src={img}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-20 h-20 object-cover border-2 ${
-                  selectedImage === img ? "border-blue-500" : "border-gray-300"
-                } rounded cursor-pointer`}
+                className={`w-16 h-16 object-cover border-2 ${selectedImage === img ? "border-primary" : "border-secondary"} rounded cursor-pointer`}
                 onClick={() => setSelectedImage(img)}
                 onError={(e) => (e.target.src = FALLBACK_IMAGE)}
               />
@@ -135,8 +130,17 @@ const ProductDetails = () => {
                   ))
                 : <li>No description available.</li>}
             </ul>
-            <h3 className="text-xl font-bold mt-4 text-blue-600">${product.price}</h3>
-            <Button variant="primary" onClick={() => dispatch(addToCart(product))} className="mt-3">
+            <h3 className="text-xl font-bold mt-4 text-primary">${product.price}</h3>
+
+            {/* Quantity Selector */}
+            <div className="d-flex align-items-center mt-3">
+              <Button variant="outline-secondary" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
+              <span className="mx-3">{quantity}</span>
+              <Button variant="outline-secondary" onClick={() => setQuantity(quantity + 1)}>+</Button>
+            </div>
+
+            {/* Add to Cart Button */}
+            <Button variant="success" className="mt-3 w-100" onClick={() => dispatch(addToCart({ ...product, quantity }))}>
               Add to Cart 🛒
             </Button>
           </Card.Body>
@@ -164,53 +168,14 @@ const ProductDetails = () => {
           <Form>
             <Form.Group>
               <Form.Label>Rating:</Form.Label>
-              <Form.Control
-                type="number"
-                min="1"
-                max="5"
-                value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
-              />
+              <Form.Control type="number" min="1" max="5" value={rating} onChange={(e) => setRating(Number(e.target.value))} />
             </Form.Group>
             <Form.Group>
               <Form.Label>Comment:</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
+              <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} />
             </Form.Group>
-            <Button onClick={submitReview} className="mt-3">
-              Submit Review
-            </Button>
+            <Button onClick={submitReview} className="mt-3">Submit Review</Button>
           </Form>
-        </div>
-      </div>
-
-      {/* Similar Products */}
-      <div className="mt-5">
-        <h3 className="text-xl font-bold">Similar Products</h3>
-        <div className="flex gap-4 overflow-x-auto mt-3 scrollbar-hide">
-          {similarProducts.map((item) => (
-            <Card
-              key={item.id}
-              className="w-40 mx-2 cursor-pointer shadow-sm border rounded-lg p-2 transition-transform transform hover:scale-105"
-              onClick={() => navigate(`/product/${item.id}`)}
-            >
-              <Card.Img
-                variant="top"
-                src={item.image}
-                alt={item.name}
-                className="h-28 object-cover rounded"
-                onError={(e) => (e.target.src = FALLBACK_IMAGE)}
-              />
-              <Card.Body className="text-center">
-                <Card.Title className="text-xs font-semibold">{item.name}</Card.Title>
-                <Card.Text className="text-sm text-gray-600">${item.price}</Card.Text>
-              </Card.Body>
-            </Card>
-          ))}
         </div>
       </div>
     </Container>

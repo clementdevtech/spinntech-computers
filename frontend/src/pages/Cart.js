@@ -15,11 +15,12 @@ const Cart = () => {
         <div className="bg-white p-4 shadow-md rounded">
           {cartItems.map((item) => (
             <div key={item.id} className="flex justify-between border-b py-2">
+              <img src={item.image} alt={item.name} className="w-16 h-16" />
               <p>{item.name} - ${item.price}</p>
               <div>
-                <button onClick={() => dispatch(updateQuantity({ id: item.id, amount: -1 }))} className="px-2">-</button>
+                <button onClick={() => dispatch(updateQuantity({ id: item.id, amount: -1 }))}>-</button>
                 <span className="mx-2">{item.quantity}</span>
-                <button onClick={() => dispatch(updateQuantity({ id: item.id, amount: 1 }))} className="px-2">+</button>
+                <button onClick={() => dispatch(updateQuantity({ id: item.id, amount: 1 }))}>+</button>
                 <button onClick={() => dispatch(removeFromCart(item.id))} className="ml-4 text-red-500">Remove</button>
               </div>
             </div>
