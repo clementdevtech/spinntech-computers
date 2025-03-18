@@ -7,7 +7,7 @@ import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { FaFilter, FaComments } from "react-icons/fa";
 import ChatSupport from "../components/ChatSupport";
 import Loader from "../components/ui/Loader";
-import ProductCard from "../components/ProductCard"; // ✅ Import ProductCard
+import ProductCard from "../components/ProductCard";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -28,16 +28,13 @@ const Home = () => {
     setCategories(response);
   };
 
-  // ✅ Ensure `products` is always an array
+  // Ensure `products` is always an array
   const safeProducts = Array.isArray(products) ? products : [];
 
   // Filter products based on selected category and price range
   const filteredProducts = safeProducts.filter((product) => {
-    const withinPriceRange =
-      product.price >= priceRange[0] && product.price <= priceRange[1];
-    const matchesCategory = selectedCategory
-      ? product.category === selectedCategory
-      : true;
+    const withinPriceRange = product.price >= priceRange[0] && product.price <= priceRange[1];
+    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     return withinPriceRange && matchesCategory;
   });
 
@@ -94,14 +91,18 @@ const Home = () => {
             <Loader />
           ) : (
             <Row>
-              {filteredProducts
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                .slice(0, 4)
-                .map((product) => (
-                  <Col md={3} key={product.id} className="mb-4">
-                    <ProductCard product={product} />
-                  </Col>
-                ))}
+              {filteredProducts.length > 0 ? (
+                filteredProducts
+                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                  .slice(0, 4)
+                  .map((product) => (
+                    <Col md={3} key={product.id} className="mb-4">
+                      <ProductCard product={product} />
+                    </Col>
+                  ))
+              ) : (
+                <p className="text-center">No recent products found.</p>
+              )}
             </Row>
           )}
         </Container>
@@ -113,30 +114,38 @@ const Home = () => {
             <Loader />
           ) : (
             <Row>
-              {filteredProducts
-                .sort((a, b) => a.price - b.price)
-                .slice(0, 4)
-                .map((product) => (
-                  <Col md={3} key={product.id} className="mb-4">
-                    <ProductCard product={product} />
-                  </Col>
-                ))}
+              {filteredProducts.length > 0 ? (
+                filteredProducts
+                  .sort((a, b) => a.price - b.price)
+                  .slice(0, 4)
+                  .map((product) => (
+                    <Col md={3} key={product.id} className="mb-4">
+                      <ProductCard product={product} />
+                    </Col>
+                  ))
+              ) : (
+                <p className="text-center">No products available in this price range.</p>
+              )}
             </Row>
           )}
         </Container>
 
-        {/* View All Products */}
+        {/* All Products */}
         <Container className="my-5">
           <h2 className="text-center mb-4">All Products</h2>
           {loading ? (
             <Loader />
           ) : (
             <Row>
-              {filteredProducts.map((product) => (
-                <Col md={3} key={product.id} className="mb-4">
-                  <ProductCard product={product} />
-                </Col>
-              ))}
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <Col md={3} key={product.id} className="mb-4">
+                    <ProductCard product={product} />
+                  </Col>
+                ))
+              ) : (
+                <p className="text-center">No products found.</p>
+              )}
             </Row>
           )}
         </Container>

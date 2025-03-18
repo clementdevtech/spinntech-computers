@@ -19,10 +19,11 @@ export const fetchCategories = async () => {
     if (!response.ok) throw new Error("Failed to fetch categories");
     return await response.json();
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching categories:", error.message);
     return [];
   }
 };
+
 
 // Fetch a single product by ID
 export const fetchProductById = async (productId) => {

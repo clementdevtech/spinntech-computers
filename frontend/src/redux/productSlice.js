@@ -6,14 +6,9 @@ const API_BASE_URL = process.env.REACT_APP_API_URL
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/products`);
-    if (response.data && Array.isArray(response.data.products)) {
-      return response.data.products;
-    } else {
-      console.error("Error: Expected an array but got", response.data);
-      return [];
-    }
+    return response.data?.products ?? [];
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error fetching products:", error.message);
     return [];
   }
 });

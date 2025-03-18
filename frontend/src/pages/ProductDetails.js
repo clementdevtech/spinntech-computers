@@ -1,32 +1,32 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Container, Card, Button, Form, Row, Col } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import { Container, Card, Button, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
+import SimilarProducts from "../components/similarProducts"; 
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const FALLBACK_IMAGE = require("../assets/images/product.png");
+const FALLBACK_IMAGE = "/assets/images/product.png"; // Ensure correct fallback path
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(FALLBACK_IMAGE);
   const [quantity, setQuantity] = useState(1);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [imageArray, setImageArray] = useState([]);
 
   // Fetch product details
   const fetchProduct = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/products/${id}`);
       setProduct(response.data);
+
+      // Ensure images are an array & set the first image as default
       const images = Array.isArray(response.data.image) ? response.data.image : JSON.parse(response.data.image || "[]");
+      setImageArray(images.length > 0 ? images : [FALLBACK_IMAGE]);
       setSelectedImage(images.length > 0 ? images[0] : FALLBACK_IMAGE);
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -35,49 +35,12 @@ const ProductDetails = () => {
     }
   }, [id]);
 
-  // Fetch reviews
-  const fetchReviews = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/products/${id}/reviews`);
-      setReviews(response.data.slice(0, 5)); // Show last 5 reviews
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  }, [id]);
-
-  // Fetch similar products
-  const fetchSimilarProducts = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/products/similar/${id}`);
-      setSimilarProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching similar products:", error);
-    }
-  }, [id]);
-
   useEffect(() => {
     fetchProduct();
-    fetchReviews();
-    fetchSimilarProducts();
-  }, [fetchProduct, fetchReviews, fetchSimilarProducts]);
-
-  // Submit a review
-  const submitReview = async () => {
-    try {
-      await axios.post(`${API_BASE_URL}/products/${id}/reviews`, { rating, comment });
-      setRating(0);
-      setComment("");
-      fetchReviews();
-    } catch (error) {
-      console.error("Error submitting review:", error);
-    }
-  };
+  }, [fetchProduct]);
 
   if (loading) return <p>Loading product details...</p>;
   if (!product) return <p>Product not found.</p>;
-
-  // Handle multiple images
-  const imageArray = Array.isArray(product.image) ? product.image : JSON.parse(product.image || "[]");
 
   return (
     <Container className="my-5">
@@ -89,7 +52,7 @@ const ProductDetails = () => {
         </Col>
       </Row>
 
-      {/* Image & Details Section */}
+      {/* Product Image & Details Section */}
       <Row className="align-items-start">
         {/* Product Image Section */}
         <Col md={5}>
@@ -105,13 +68,15 @@ const ProductDetails = () => {
           </Card>
 
           {/* Scrollable Image Row */}
-          <div className="mt-3 overflow-x-auto d-flex gap-2">
+          <div className="mt-3 overflow-x-auto d-flex gap-2" style={{ whiteSpace: "nowrap" }}>
             {imageArray.map((img, index) => (
               <img
                 key={index}
                 src={img}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-16 h-16 object-cover border-2 ${selectedImage === img ? "border-primary" : "border-secondary"} rounded cursor-pointer`}
+                className={`w-20 h-20 object-cover border-2 ${
+                  selectedImage === img ? "border-primary" : "border-secondary"
+                } rounded cursor-pointer`}
                 onClick={() => setSelectedImage(img)}
                 onError={(e) => (e.target.src = FALLBACK_IMAGE)}
               />
@@ -123,13 +88,7 @@ const ProductDetails = () => {
         <Col md={7}>
           <Card.Body>
             <h3 className="text-2xl font-semibold">Product Details</h3>
-            <ul className="list-disc ml-5 text-gray-700">
-              {product.description
-                ? product.description.split(". ").map((point, index) => (
-                    <li key={index} className="py-1">{point}</li>
-                  ))
-                : <li>No description available.</li>}
-            </ul>
+            <p className="text-gray-700">{product.description || "No description available."}</p>
             <h3 className="text-xl font-bold mt-4 text-primary">${product.price}</h3>
 
             {/* Quantity Selector */}
@@ -140,44 +99,19 @@ const ProductDetails = () => {
             </div>
 
             {/* Add to Cart Button */}
-            <Button variant="success" className="mt-3 w-100" onClick={() => dispatch(addToCart({ ...product, quantity }))}>
+            <Button
+              variant="success"
+              className="mt-3 w-100"
+              onClick={() => dispatch(addToCart({ ...product, quantity }))}
+            >
               Add to Cart 🛒
             </Button>
           </Card.Body>
         </Col>
       </Row>
 
-      {/* Product Reviews */}
-      <div className="mt-5">
-        <h3 className="text-xl font-bold">Customer Reviews</h3>
-        {reviews.length === 0 ? (
-          <p>No reviews yet.</p>
-        ) : (
-          <ul className="list-disc ml-5">
-            {reviews.map((review, index) => (
-              <li key={index} className="py-1">
-                <strong>⭐ {review.rating}/5</strong> - {review.comment}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {/* Review Form */}
-        <div className="mt-4">
-          <h4>Leave a Review</h4>
-          <Form>
-            <Form.Group>
-              <Form.Label>Rating:</Form.Label>
-              <Form.Control type="number" min="1" max="5" value={rating} onChange={(e) => setRating(Number(e.target.value))} />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Comment:</Form.Label>
-              <Form.Control as="textarea" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} />
-            </Form.Group>
-            <Button onClick={submitReview} className="mt-3">Submit Review</Button>
-          </Form>
-        </div>
-      </div>
+      {/* Similar Products Section */}
+      <SimilarProducts productId={id} />
     </Container>
   );
 };
