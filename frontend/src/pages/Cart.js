@@ -3,6 +3,8 @@ import { removeFromCart, updateQuantity, clearCart } from "../redux/cartSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+import "../assets/css/cart.css";
+const FALLBACK_IMAGE = require("../assets/images/product.png");
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,12 +32,15 @@ const Cart = () => {
           {cartItems.map((item) => (
             <div key={item.id} className="flex items-center justify-between border-b py-4">
               {/* Product Image */}
-              <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded" />
+              <img src={item.image.startsWith("http") ? item.image : FALLBACK_IMAGE} alt={item.name} className="w-20 h-20 object-cover rounded" />
 
               {/* Product Details */}
               <div className="flex-1 ml-4">
                 <p className="font-semibold">{item.name}</p>
-                <p className="text-gray-600">${item.price.toFixed(2)}</p>
+                <p className="text-gray-600">
+                    ${parseFloat(item.price || 0).toFixed(2)}
+                </p>
+
               </div>
 
               {/* Quantity Controls */}
@@ -72,14 +77,14 @@ const Cart = () => {
           {/* Buttons: Checkout & Clear Cart */}
           <div className="flex justify-between mt-4">
             <button
-              className="bg-red-500 text-white px-4 py-2 rounded"
+              className="cart-btn text-white px-4 py-2 rounded"
               onClick={() => dispatch(clearCart())}
             >
               Clear Cart 🗑
             </button>
 
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="cart-btn text-white px-4 py-2 rounded"
               onClick={() => navigate("/checkout")}
             >
               Proceed to Checkout 🛍

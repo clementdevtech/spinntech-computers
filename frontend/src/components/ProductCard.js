@@ -7,6 +7,7 @@ import { addToCart } from "../redux/cartSlice";
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const quantity = 1;
 
   const placeholderImage = require("../assets/images/product.png");
   const imageArray = typeof product.image === "string" ? JSON.parse(product.image) : product.image;
@@ -37,18 +38,19 @@ const ProductCard = ({ product }) => {
           <div className="text-yellow-500">
             {product.reviews?.length ? "⭐".repeat(Math.round(averageRating)) : "No ratings yet"}
           </div>
-          <Card.Text className="text-gray-600">${product.price}</Card.Text>
+          <Card.Text className="text-gray-600">Ksh{product.price}</Card.Text>
         </Card.Body>
       </div>
 
       {/* Add to Cart Button */}
-      <Button 
-        onClick={() => dispatch(addToCart(product))}
-        variant="primary"
-        className="w-full mt-2"
+      <Button
+        variant="success"
+        className="mt-3 w-100"
+        onClick={() => dispatch(addToCart({ ...product, quantity }))}
       >
-        Add to Cart 🛒
+          Add to Cart 🛒
       </Button>
+
     </Card>
   );
 };

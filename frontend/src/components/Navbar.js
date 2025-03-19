@@ -4,9 +4,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchCategories } from "../redux/productSlice";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
+import { ShoppingCart } from "lucide-react";
 import "../assets/css/Navbar.css";
 import { logoutUser } from "../redux/authSlice";
-import NotificationBell from "./NotificationBell";
+//import NotificationBell from "./NotificationBell";
 import Sidebar from "./Sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -15,6 +16,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { categories, loading } = useSelector((state) => state.products);
+  const { cartItems } = useSelector((state) => state.cart);
   const [search, setSearch] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -46,7 +48,15 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="d-flex align-items-center ms-auto flex-wrap">
-          <NotificationBell />
+
+          {/* Cart Icon with Badge */}
+        <Link to="/cart" className="position-relative mx-3">
+          <ShoppingCart size={28} className="text-white" />
+          {cartItems.length > 0 && (
+            <span className="cart-badge">{cartItems.length}</span>
+          )}
+
+        </Link>
           {user ? (
             <div className="dropdown ms-3">
               <button

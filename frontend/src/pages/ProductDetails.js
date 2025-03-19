@@ -7,7 +7,7 @@ import { addToCart } from "../redux/cartSlice";
 import SimilarProducts from "../components/similarProducts"; 
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const FALLBACK_IMAGE = "/assets/images/product.png"; // Ensure correct fallback path
+const FALLBACK_IMAGE = require("../assets/images/product.png");
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -59,7 +59,7 @@ const ProductDetails = () => {
           <Card className="shadow-lg p-3">
             <Card.Img
               variant="top"
-              src={selectedImage}
+              src={selectedImage.startsWith("http") ? selectedImage : FALLBACK_IMAGE}
               alt={product.name}
               className="w-100 h-auto rounded"
               style={{ maxHeight: "350px", objectFit: "contain" }}
@@ -72,7 +72,7 @@ const ProductDetails = () => {
             {imageArray.map((img, index) => (
               <img
                 key={index}
-                src={img}
+                src={img.startsWith("http") ? img : FALLBACK_IMAGE}
                 alt={`Thumbnail ${index + 1}`}
                 className={`w-20 h-20 object-cover border-2 ${
                   selectedImage === img ? "border-primary" : "border-secondary"
@@ -89,7 +89,7 @@ const ProductDetails = () => {
           <Card.Body>
             <h3 className="text-2xl font-semibold">Product Details</h3>
             <p className="text-gray-700">{product.description || "No description available."}</p>
-            <h3 className="text-xl font-bold mt-4 text-primary">${product.price}</h3>
+            <h3 className="text-xl font-bold mt-4 text-primary">Ksh{product.price}</h3>
 
             {/* Quantity Selector */}
             <div className="d-flex align-items-center mt-3">
@@ -106,6 +106,7 @@ const ProductDetails = () => {
             >
               Add to Cart 🛒
             </Button>
+
           </Card.Body>
         </Col>
       </Row>

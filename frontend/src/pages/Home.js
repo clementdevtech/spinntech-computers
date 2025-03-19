@@ -14,7 +14,7 @@ const Home = () => {
   const { products, loading } = useSelector((state) => state.products);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 150000]);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
@@ -72,10 +72,10 @@ const Home = () => {
             </Col>
             <Col md={4}>
               <Form.Group controlId="priceRange">
-                <Form.Label>Price Range: ${priceRange[0]} - ${priceRange[1]}</Form.Label>
+                <Form.Label>Price Range: ksh{priceRange[0]} - ksh{priceRange[1]}</Form.Label>
                 <Form.Range
                   min="0"
-                  max="1000"
+                  max="150,000"
                   value={priceRange[1]}
                   onChange={(e) => setPriceRange([0, Number(e.target.value)])}
                 />

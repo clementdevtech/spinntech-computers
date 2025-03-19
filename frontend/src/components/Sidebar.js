@@ -8,6 +8,7 @@ import "../assets/css/sidebar.css";
 const Sidebar = ({ closeSidebar }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
   const token = user?.token;
 
   useEffect(() => {
@@ -57,6 +58,14 @@ const Sidebar = ({ closeSidebar }) => {
               <User size={20} />
               <span>Dashboard</span>
             </Link>
+
+            <Link to="/cart" className="sidebar-link position-relative" onClick={closeSidebar}>
+            <ShoppingCart size={20} />
+            <span>Cart</span>
+            {cartItems.length > 0 && (
+              <span className="cart-badge">{cartItems.length}</span>
+            )}
+          </Link>
 
             <Link to="/profile" className="sidebar-link" onClick={closeSidebar}>
               <User size={20} />
