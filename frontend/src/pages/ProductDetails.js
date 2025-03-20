@@ -7,7 +7,7 @@ import { addToCart } from "../redux/cartSlice";
 import SimilarProducts from "../components/similarProducts"; 
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const FALLBACK_IMAGE = require("../assets/images/product.png");
+const FALLBACK_IMAGE = "/products/fallback.png";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -18,16 +18,19 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [imageArray, setImageArray] = useState([]);
 
-  // Fetch product details
   const fetchProduct = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/products/${id}`);
       setProduct(response.data);
 
-      // Ensure images are an array & set the first image as default
-      const images = Array.isArray(response.data.image) ? response.data.image : JSON.parse(response.data.image || "[]");
-      setImageArray(images.length > 0 ? images : [FALLBACK_IMAGE]);
-      setSelectedImage(images.length > 0 ? images[0] : FALLBACK_IMAGE);
+      const images = Array.isArray(response.data.image) 
+        ? response.data.image 
+        : JSON.parse(response.data.image || "[]");
+
+      const formattedImages = images.map(img => `/products/${img.split("/").pop()}`);
+
+      setImageArray(formattedImages.length > 0 ? formattedImages : [FALLBACK_IMAGE]);
+      setSelectedImage(formattedImages.length > 0 ? formattedImages[0] : FALLBACK_IMAGE);
     } catch (error) {
       console.error("Error fetching product:", error);
     } finally {
@@ -44,52 +47,60 @@ const ProductDetails = () => {
 
   return (
     <Container className="my-5">
-      {/* Product Name & Short Description */}
-      <Row className="mb-4">
-        <Col>
+      <Row className="mb-4 text-center">
+        <Col xs={12}>
           <h2 className="text-3xl font-bold">{product.name}</h2>
           <p className="text-lg text-gray-700 mt-2">{product.shortDescription || "A high-quality product."}</p>
         </Col>
       </Row>
 
-      {/* Product Image & Details Section */}
       <Row className="align-items-start">
         {/* Product Image Section */}
-        <Col md={5}>
+        <Col xs={12} md={6} className="text-center">
           <Card className="shadow-lg p-3">
             <Card.Img
               variant="top"
-              src={selectedImage.startsWith("http") ? selectedImage : FALLBACK_IMAGE}
+              src={selectedImage}
               alt={product.name}
               className="w-100 h-auto rounded"
-              style={{ maxHeight: "350px", objectFit: "contain" }}
+              style={{ maxHeight: "400px", objectFit: "contain" }}
               onError={(e) => (e.target.src = FALLBACK_IMAGE)}
             />
           </Card>
 
-          {/* Scrollable Image Row */}
-          <div className="mt-3 overflow-x-auto d-flex gap-2" style={{ whiteSpace: "nowrap" }}>
+          {/* Scrollable Thumbnail Gallery */}
+          <div 
+            className="d-flex flex-wrap gap-2 justify-content-center mt-3"
+            style={{
+              overflowX: "auto",
+              maxWidth: "100%",
+            }}
+          >
             {imageArray.map((img, index) => (
               <img
                 key={index}
-                src={img.startsWith("http") ? img : FALLBACK_IMAGE}
+                src={img}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-20 h-20 object-cover border-2 ${
-                  selectedImage === img ? "border-primary" : "border-secondary"
-                } rounded cursor-pointer`}
+                className={`border-2 rounded cursor-pointer ${selectedImage === img ? "border-primary shadow-lg scale-105" : "border-gray-300"}`}
                 onClick={() => setSelectedImage(img)}
                 onError={(e) => (e.target.src = FALLBACK_IMAGE)}
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  transition: "transform 0.2s ease-in-out",
+                  cursor: "pointer",
+                }}
               />
             ))}
           </div>
         </Col>
 
         {/* Product Details & Price */}
-        <Col md={7}>
+        <Col xs={12} md={6}>
           <Card.Body>
             <h3 className="text-2xl font-semibold">Product Details</h3>
             <p className="text-gray-700">{product.description || "No description available."}</p>
-            <h3 className="text-xl font-bold mt-4 text-primary">Ksh{product.price}</h3>
+            <h3 className="text-xl font-bold mt-4 text-primary">Ksh {product.price}</h3>
 
             {/* Quantity Selector */}
             <div className="d-flex align-items-center mt-3">
@@ -106,7 +117,6 @@ const ProductDetails = () => {
             >
               Add to Cart 🛒
             </Button>
-
           </Card.Body>
         </Col>
       </Row>

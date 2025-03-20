@@ -4,41 +4,39 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 
+const FALLBACK_IMAGE = "/products/fallback.png"; // ✅ Updated fallback image path
+
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const quantity = 1;
 
-  const placeholderImage = require("../assets/images/product.png");
-  const imageArray = typeof product.image === "string" ? JSON.parse(product.image) : product.image;
-  const imageUrl = product.image?.[0]
-    ? require(`../assets/products/${imageArray[0].split('/').pop()}`)
-    : placeholderImage;
+  // ✅ Ensure images are parsed properly
+  const imageArray = Array.isArray(product.image)
+    ? product.image
+    : JSON.parse(product.image || "[]");
 
-  // Calculate average rating
-  const averageRating = product.reviews?.length
-    ? (
-        product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
-      ).toFixed(1)
-    : "No ratings yet";
+  // ✅ Use first image & ensure valid URL
+  const productImage = imageArray.length > 0 
+    ? `/products/${imageArray[0].split("/").pop()}` 
+    : FALLBACK_IMAGE;
 
   return (
-    <Card 
-      className="shadow-sm border rounded-lg p-3 cursor-pointer transition-transform transform hover:scale-105"
-    >
+    <Card className="shadow-sm border rounded-lg p-3 cursor-pointer transition-transform transform hover:scale-105">
+      {/* Clickable Image */}
       <div onClick={() => navigate(`/product/${product.id}`)}>
         <Card.Img
           variant="top"
-          src={imageUrl}
+          src={productImage}
           alt={product.name}
           className="h-48 object-cover rounded"
+          onError={(e) => (e.target.src = FALLBACK_IMAGE)} // ✅ Handle broken images
         />
         <Card.Body className="text-center">
           <Card.Title className="text-lg font-semibold">{product.name}</Card.Title>
-          <div className="text-yellow-500">
-            {product.reviews?.length ? "⭐".repeat(Math.round(averageRating)) : "No ratings yet"}
-          </div>
-          <Card.Text className="text-gray-600">Ksh{product.price}</Card.Text>
+          <Card.Text className="text-gray-600">
+            Ksh {parseFloat(product.price || 0).toFixed(2)}
+          </Card.Text>
         </Card.Body>
       </div>
 
@@ -48,9 +46,8 @@ const ProductCard = ({ product }) => {
         className="mt-3 w-100"
         onClick={() => dispatch(addToCart({ ...product, quantity }))}
       >
-          Add to Cart 🛒
+        Add to Cart 🛒
       </Button>
-
     </Card>
   );
 };
