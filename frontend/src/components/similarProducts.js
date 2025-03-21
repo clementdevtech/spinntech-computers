@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const FALLBACK_IMAGE = require("../assets/images/product.png");
+const FALLBACK_IMAGE = "/products/product.png";
 
 const SimilarProducts = ({ productId }) => {
   const [similarProducts, setSimilarProducts] = useState([]);

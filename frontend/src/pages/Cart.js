@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import "../assets/css/cart.css";
-const FALLBACK_IMAGE = require("../assets/images/product.png");
+const FALLBACK_IMAGE = "/products/product.png";
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
