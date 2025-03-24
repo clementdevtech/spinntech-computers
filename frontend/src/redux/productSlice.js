@@ -1,34 +1,37 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/products`);
-    return response.data?.products ?? [];
+    return response.data.products ?? []; // Ensure correct data extraction
   } catch (error) {
     console.error("Error fetching products:", error.message);
-    return [];
+    throw error; // Let Redux handle the error
   }
 });
-
 
 export const fetchCategories = createAsyncThunk("categories/fetchCategories", async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/products/categories`);
     return response.data.length ? response.data : [];
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    return [];
+    console.error("Error fetching categories:", error.message);
+    throw error;
   }
 });
 
 export const addProduct = createAsyncThunk("products/addProduct", async (productData, { dispatch }) => {
-  await axios.post(`${API_BASE_URL}/products/createproduct`, productData);
-  dispatch(fetchProducts());
+  try {
+    await axios.post(`${API_BASE_URL}/products/createproduct`, productData);
+    dispatch(fetchProducts()); // Refresh product list after adding
+  } catch (error) {
+    console.error("Error adding product:", error.message);
+    throw error;
+  }
 });
-
 
 const productSlice = createSlice({
   name: "products",

@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
+import OrderPlacement from "./components/OrderPlacement";
 import ProductDetails from "./pages/ProductDetails";
 import Affiliate from "./pages/Affiliate";
 import AdminPanel from "./pages/AdminPanel";
@@ -41,6 +42,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/order" element={<OrderPlacement />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/affiliate" element={<Affiliate />} />
           <Route path="/login" element={<Login />} />

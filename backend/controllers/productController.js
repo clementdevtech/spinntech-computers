@@ -16,7 +16,7 @@ const getAllProducts = async (req, res) => {
       .offset(offset);
 
     const total = await db("products").count("* as count");
-    //console.log(products);
+    console.log("products: loaded");
     res.json({ products, total: total[0].count });
   } catch (error) {
     console.log('Error in getting all products', error.message);

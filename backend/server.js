@@ -11,24 +11,27 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-// Create HTTP server
-const server = http.createServer(app);
+// Create Express App
+const server = express();
 
 // Middleware
-app.use(morgan("dev"));
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors({
+server.use(morgan("dev"));
+server.use(express.json());
+server.use(cookieParser());
+
+// ✅ FIX: Apply CORS to `server`
+server.use(cors({
     origin: ["http://localhost:3000", "https://spinntech-computers-production.up.railway.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Initialize WebSocket
-initSocket(server);
+server.use("/", app);
 
-// Start Server
-server.listen(PORT, () => {
+const httpServer = http.createServer(server);
+initSocket(httpServer);
+
+httpServer.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
