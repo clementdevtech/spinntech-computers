@@ -1,82 +1,66 @@
-const Chat = require("../models/Chat");
 const db = require("../db");
+const { io } = require("../services/socket");
 
-
+// User sends a message
 exports.sendMessage = async (req, res) => {
+  const { message } = req.body;
+
+  try {
+      // Check if a learned response exists
+      const response = await db("chat").where("user_message", message).select("bot_response").first();
+      
+      let botResponse = "Your message has been received. An admin will reply soon.";
+      if (response && response.bot_response) {
+          botResponse = response.bot_response;
+      } else {
+          await db("chat").insert({ user_message: message });
+      }
+
+      // Emit message to all connected clients
+      getIo().emit("receiveMessage", { userMessage: message, botResponse });
+
+      return res.json({ response: botResponse });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Database error" });
+  }
+};
+
+// Admin replies to a user
+exports.adminReply = async (req, res) => {
+    const { query_id, reply } = req.body;
+
     try {
-        const { receiverId, message } = req.body;
-        const senderId = req.user.id;
+        await db("chat").where("id", query_id).update({
+            bot_response: reply,
+            admin_assigned: true,
+        });
 
-        const newMessage = await Chat.create({ senderId, receiverId, message });
-
-        res.status(201).json({ message: "Message sent", newMessage });
+        res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+        console.error(error);
+        res.status(500).json({ error: "Database error" });
     }
 };
 
-exports.getMessages = async (req, res) => {
+// Fetch unanswered queries
+exports.getUnansweredQueries = async (req, res) => {
     try {
-        const { chatId } = req.params;
-        const messages = await Chat.findByChatId(chatId);
+        const queries = await db("chat").where("admin_assigned", false).select();
+        res.json(queries);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Database error" });
+    }
+};
 
+// Fetch all chat messages
+exports.getAllMessages = async (req, res) => {
+    try {
+        const messages = await db("chat").select();
         res.json(messages);
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+        console.error(error);
+        res.status(500).json({ error: "Database error" });
     }
-};
-
-
-// ✅ Store User Query
-exports.storeUserQuery = async (req, res) => {
-  try {
-    const { user_id, message } = req.body;
-    if (!message) {
-      return res.status(400).json({ message: "Query cannot be empty" });
-    }
-
-    const newQuery = await db("chat_queries").insert({ user_id, message }).returning("*");
-    res.status(201).json(newQuery);
-  } catch (error) {
-    res.status(500).json({ message: "Error storing query", error });
-  }
-};
-
-// ✅ Fetch Similar Queries & Suggested Replies
-exports.getSuggestedReplies = async (req, res) => {
-  try {
-    const { query } = req.query;
-    if (!query) {
-      return res.status(400).json({ message: "Query is required" });
-    }
-
-    // Find similar queries from history
-    const similarQueries = await db("chat_queries")
-      .where("message", "ILIKE", `%${query}%`)
-      .select("message", "admin_reply")
-      .limit(5);
-
-    res.json(similarQueries);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching replies", error });
-  }
-};
-
-// ✅ Admin Responds to User Query
-exports.adminReply = async (req, res) => {
-  try {
-    const { query_id, reply } = req.body;
-    if (!query_id || !reply) {
-      return res.status(400).json({ message: "Query ID and reply are required" });
-    }
-
-    const updatedQuery = await db("chat_queries")
-      .where({ id: query_id })
-      .update({ admin_reply: reply })
-      .returning("*");
-
-    res.json(updatedQuery);
-  } catch (error) {
-    res.status(500).json({ message: "Error saving admin response", error });
-  }
 };

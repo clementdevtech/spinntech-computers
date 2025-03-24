@@ -1,47 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000"); // Connect to backend WebSocket server
 
 const ChatBox = () => {
-  const [messages, setMessages] = useState([
-    { text: "Hello! How can I help you?", sender: "bot" },
-  ]);
-  const [input, setInput] = useState("");
+    const [messages, setMessages] = useState([
+        { text: "Hello! How can I help you?", sender: "bot" },
+    ]);
+    const [input, setInput] = useState("");
 
-  const sendMessage = () => {
-    if (input.trim() === "") return;
-    setMessages([...messages, { text: input, sender: "user" }]);
-    setInput("");
-    // Simulate bot reply
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { text: "We'll get back to you soon!", sender: "bot" }]);
-    }, 1500);
-  };
+    useEffect(() => {
+        socket.on("receiveMessage", (message) => {
+            setMessages((prev) => [...prev, { text: message.userMessage, sender: "user" }]);
+            if (message.botResponse) {
+                setTimeout(() => {
+                    setMessages((prev) => [...prev, { text: message.botResponse, sender: "bot" }]);
+                }, 500);
+            }
+        });
 
-  return (
-    <div className="fixed bottom-4 right-4 bg-white p-4 shadow-md rounded-lg w-80">
-      <h3 className="text-lg font-semibold">Live Chat</h3>
-      <div className="h-40 overflow-y-auto border p-2">
-        {messages.map((msg, index) => (
-          <div key={index} className={`p-1 rounded ${msg.sender === "user" ? "text-right" : "text-left"}`}>
-            <span className={`inline-block p-2 rounded-lg ${msg.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>
-              {msg.text}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="flex mt-2">
-        <input
-          type="text"
-          className="w-full p-1 border rounded"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button onClick={sendMessage} className="bg-blue-500 text-white px-3 py-1 rounded ml-2">
-          Send
-        </button>
-      </div>
-    </div>
-  );
+        return () => socket.off("receiveMessage");
+    }, []);
+
+    const sendMessage = () => {
+        if (input.trim() === "") return;
+
+        socket.emit("sendMessage", input); // Send message in real-time
+        setMessages([...messages, { text: input, sender: "user" }]);
+        setInput("");
+    };
+
+    return (
+        <div className="chat-box">
+            <h3>Live Chat</h3>
+            <div className="messages">
+                {messages.map((msg, index) => (
+                    <div key={index} className={msg.sender}>
+                        {msg.text}
+                    </div>
+                ))}
+            </div>
+            <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type a message..."
+            />
+            <button onClick={sendMessage}>Send</button>
+        </div>
+    );
 };
 
 export default ChatBox;
