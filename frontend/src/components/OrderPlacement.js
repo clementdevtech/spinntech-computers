@@ -10,28 +10,48 @@ const OrderPlacement = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [orderDetails, setOrderDetails] = useState({
-    name: user?.name || "",
-    address: user?.address || "",
-    phone: user?.phone || "",
+    name: "",
+    address: "",
+    phone: "",
     quantity: 1,
   });
   const [orderStatus, setOrderStatus] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-
+  // ✅ Fetch user details from the backend if not in Redux
   useEffect(() => {
     if (!user) {
       navigate("/login");
     } else {
-      setLoading(false);
+      fetchUserDetails();
     }
   }, [user, navigate]);
 
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/auth/user`, { withCredentials: true });
+      if (response.data) {
+        setOrderDetails({
+          name: response.data.name || "",
+          address: response.data.address || "",
+          phone: response.data.phone_number || "",
+          quantity: 1,
+        });
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      setLoading(false);
+    }
+  };
+
+  // ✅ Handle form input changes
   const handleInputChange = (e) => {
     setOrderDetails({ ...orderDetails, [e.target.name]: e.target.value });
   };
 
+  // ✅ Handle order confirmation
   const confirmOrder = async () => {
     try {
       await axios.post(`${API_BASE_URL}/orders`, orderDetails);
@@ -97,7 +117,7 @@ const OrderPlacement = () => {
         </Form>
       </Card>
 
-    
+      {/* ✅ Confirmation Modal */}
       <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Your Order</Modal.Title>

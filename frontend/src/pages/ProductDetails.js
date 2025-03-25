@@ -2,11 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card, Button, Row, Col } from "react-bootstrap";
 import axios from "axios";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addToCart } from "../redux/cartSlice";
 import SimilarProducts from "../components/similarProducts";
-import "../assets/css/ProductDetails.css"; // ✅ Import external CSS
+import { addToCart } from "../services/cartService";
+import "../assets/css/ProductDetails.css"; 
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 const FALLBACK_IMAGE = "/products/fallback.png";
@@ -14,11 +13,9 @@ const FALLBACK_IMAGE = "/products/fallback.png";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(FALLBACK_IMAGE);
-  const [quantity, setQuantity] = useState(1);
   const [imageArray, setImageArray] = useState([]);
 
   const fetchProduct = useCallback(async () => {
@@ -30,7 +27,7 @@ const ProductDetails = () => {
         ? response.data.image
         : JSON.parse(response.data.image || "[]");
 
-      const formattedImages = images.map(img => `/products/${img.split("/").pop()}`);
+      const formattedImages = images.map((img) => `/products/${img.split("/").pop()}`);
 
       setImageArray(formattedImages.length > 0 ? formattedImages : [FALLBACK_IMAGE]);
       setSelectedImage(formattedImages.length > 0 ? formattedImages[0] : FALLBACK_IMAGE);
@@ -45,6 +42,15 @@ const ProductDetails = () => {
     fetchProduct();
   }, [fetchProduct]);
 
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(id, 1);
+      alert("Product added to cart! 🛒");
+    } catch (error) {
+      console.error("Failed to add product to cart:", error);
+    }
+  };
+  
   if (loading) return <p>Loading product details...</p>;
   if (!product) return <p>Product not found.</p>;
 
@@ -58,7 +64,6 @@ const ProductDetails = () => {
       </Row>
 
       <Row className="align-items-start">
-        {/* Product Image Section */}
         <Col xs={12} md={6} className="text-center">
           <Card className="product-image-card">
             <Card.Img
@@ -70,7 +75,6 @@ const ProductDetails = () => {
             />
           </Card>
 
-          {/* Scrollable Thumbnail Gallery */}
           <div className="image-gallery">
             {imageArray.map((img, index) => (
               <img
@@ -85,32 +89,17 @@ const ProductDetails = () => {
           </div>
         </Col>
 
-        {/* Product Details & Price */}
         <Col xs={12} md={6}>
           <Card.Body className="product-info">
             <h3>Product Details</h3>
             <p>{product.description || "No description available."}</p>
             <h3 className="product-price">Ksh {product.price}</h3>
 
-            {/* Quantity Selector */}
-            <div className="quantity-selector">
-              <Button variant="outline-secondary" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-              <span className="quantity-value">{quantity}</span>
-              <Button variant="outline-secondary" onClick={() => setQuantity(quantity + 1)}>+</Button>
-            </div>
-
-            {/* Action Buttons */}
             <div className="action-buttons">
-              <Button
-                variant="success"
-                onClick={() => dispatch(addToCart({ ...product, quantity }))}
-              >
+              <Button variant="success" onClick={handleAddToCart}>
                 Add to Cart 🛒
               </Button>
-              <Button
-                variant="primary"
-                onClick={() => navigate("/order")}
-              >
+              <Button variant="primary" onClick={() => navigate("/order")}>
                 Order Now 🛍
               </Button>
             </div>
@@ -118,7 +107,6 @@ const ProductDetails = () => {
         </Col>
       </Row>
 
-      {/* Similar Products Section */}
       <SimilarProducts productId={id} />
     </Container>
   );
