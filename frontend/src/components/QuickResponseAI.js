@@ -1,25 +1,11 @@
-const QuickResponses = ({ sendMessage }) => {
-    const responses = [
-      "How can I track my order?",
-      "What is your refund policy?",
-      "Can I change my shipping address?",
-    ];
-  
-    return (
-      <div className="p-2">
-        <h3 className="text-lg font-semibold">Quick Responses</h3>
-        {responses.map((msg, index) => (
-          <button
-            key={index}
-            onClick={() => sendMessage(msg)}
-            className="block w-full text-left bg-gray-200 hover:bg-gray-300 p-2 rounded mt-1"
-          >
-            {msg}
-          </button>
-        ))}
-      </div>
-    );
-  };
-  
-  export default QuickResponses;
-  
+import axios from "axios";
+
+export const getAIResponse = async (userMessage) => {
+  try {
+    const response = await axios.post("/api/chat/ai-response", { userMessage });
+    return response.data.answer || "I'm not sure, but an admin will assist you soon.";
+  } catch (error) {
+    console.error("Error fetching AI response:", error);
+    return "Sorry, there was an issue retrieving a response.";
+  }
+};

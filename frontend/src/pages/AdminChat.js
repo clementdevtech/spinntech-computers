@@ -1,58 +1,46 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUnansweredQueries, adminReply } from "../redux/chatSlice";
 
 const AdminChat = () => {
-  const [queries, setQueries] = useState([]);
-  const [reply, setReply] = useState("");
-  const [selectedQuery, setSelectedQuery] = useState(null);
+    const dispatch = useDispatch();
+    const { unansweredQueries, loading } = useSelector((state) => state.chat);
+    const [reply, setReply] = useState("");
+    const [selectedQuery, setSelectedQuery] = useState(null);
 
-  // Fetch unanswered queries
-  useEffect(() => {
-    axios.get("/api/chat/unanswered-queries")
-      .then(response => setQueries(response.data))
-      .catch(error => console.error("Error fetching queries:", error));
-  }, []);
+    useEffect(() => {
+        dispatch(fetchUnansweredQueries());
+    }, [dispatch]);
 
-  // Send admin reply
-  const sendReply = async () => {
-    if (!selectedQuery || !reply.trim()) return;
+    const handleReply = async () => {
+        if (selectedQuery && reply.trim()) {
+            await dispatch(adminReply({ query_id: selectedQuery.id, reply }));
+            setReply("");
+            setSelectedQuery(null);
+        }
+    };
 
-    try {
-      await axios.post("/api/chat/admin-reply", {
-        query_id: selectedQuery.id,
-        reply
-      });
-
-      setQueries(queries.filter(q => q.id !== selectedQuery.id));
-      setReply("");
-      setSelectedQuery(null);
-    } catch (error) {
-      console.error("Error sending reply:", error);
-    }
-  };
-
-  return (
-    <div className="admin-chat">
-      <h2>Admin Chat Support</h2>
-
-      <div className="query-list">
-        <h3>Unanswered Queries:</h3>
-        {queries.map((query, index) => (
-          <div key={index} onClick={() => setSelectedQuery(query)}>
-            {query.message}
-          </div>
-        ))}
-      </div>
-
-      {selectedQuery && (
-        <div className="reply-box">
-          <h3>Replying to: {selectedQuery.message}</h3>
-          <textarea value={reply} onChange={(e) => setReply(e.target.value)} />
-          <button onClick={sendReply}>Send Reply</button>
+    return (
+        <div className="admin-chat">
+            <h2>Admin Chat Panel</h2>
+            {loading ? <p>Loading...</p> : unansweredQueries.length ? (
+                <ul>
+                    {unansweredQueries.map((query) => (
+                        <li key={query.id} onClick={() => setSelectedQuery(query)}>
+                            {query.user_message}
+                        </li>
+                    ))}
+                </ul>
+            ) : <p>No unanswered queries</p>}
+            {selectedQuery && (
+                <div>
+                    <h3>Reply to: {selectedQuery.user_message}</h3>
+                    <textarea value={reply} onChange={(e) => setReply(e.target.value)} />
+                    <button onClick={handleReply}>Send Reply</button>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default AdminChat;

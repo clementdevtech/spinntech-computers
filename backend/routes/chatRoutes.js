@@ -1,11 +1,12 @@
 const express = require("express");
-const { sendMessage, adminReply, getUnansweredQueries, getAllMessages } = require("../controllers/chatController");
+const chatController = require("../controllers/chatController");
 
 const router = express.Router();
 
-router.post("/", sendMessage);
-router.post("/admin-reply", adminReply);
-router.get("/unanswered-queries", getUnansweredQueries);
-router.get("/", getAllMessages);
+router.post("/airesponse", chatController.airesponse);
+router.post("/sendMessage", chatController.sendMessage);
+router.post("/adminReply", chatController.adminReply);
+router.get("/unansweredQueries", chatController.getUnansweredQueries);
+router.get("/allMessages", chatController.getAllMessages);
 
 module.exports = router;

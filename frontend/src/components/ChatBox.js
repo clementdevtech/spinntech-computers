@@ -1,52 +1,40 @@
-import { useState, useEffect } from "react";
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:5000"); // Connect to backend WebSocket server
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { sendMessage, fetchAllMessages } from "../redux/chatSlice";
 
 const ChatBox = () => {
-    const [messages, setMessages] = useState([
-        { text: "Hello! How can I help you?", sender: "bot" },
-    ]);
-    const [input, setInput] = useState("");
+    const dispatch = useDispatch();
+    const { messages } = useSelector((state) => state.chat);
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
-        socket.on("receiveMessage", (message) => {
-            setMessages((prev) => [...prev, { text: message.userMessage, sender: "user" }]);
-            if (message.botResponse) {
-                setTimeout(() => {
-                    setMessages((prev) => [...prev, { text: message.botResponse, sender: "bot" }]);
-                }, 500);
-            }
-        });
+        dispatch(fetchAllMessages());
+    }, [dispatch]);
 
-        return () => socket.off("receiveMessage");
-    }, []);
-
-    const sendMessage = () => {
-        if (input.trim() === "") return;
-
-        socket.emit("sendMessage", input); // Send message in real-time
-        setMessages([...messages, { text: input, sender: "user" }]);
-        setInput("");
+    const handleSend = () => {
+        if (message.trim()) {
+            dispatch(sendMessage(message));
+            setMessage("");
+        }
     };
 
     return (
         <div className="chat-box">
-            <h3>Live Chat</h3>
             <div className="messages">
                 {messages.map((msg, index) => (
-                    <div key={index} className={msg.sender}>
-                        {msg.text}
+                    <div key={index} className="message">
+                        <p><strong>You:</strong> {msg.user_message}</p>
+                        <p><strong>Bot/Admin:</strong> {msg.bot_response || "Pending response..."}</p>
                     </div>
                 ))}
             </div>
             <input
                 type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 placeholder="Type a message..."
             />
-            <button onClick={sendMessage}>Send</button>
+            <button onClick={handleSend}>Send</button>
         </div>
     );
 };

@@ -16,6 +16,7 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState([0, 150000]);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [firstVisit, setFirstVisit] = useState(true);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -38,133 +39,137 @@ const Home = () => {
     return withinPriceRange && matchesCategory;
   });
 
+  // Toggle chat visibility
+  const toggleChat = () => {
+    setIsChatOpen((prev) => !prev);
+
+    // Show a welcome message only on the first visit
+    if (firstVisit) {
+      setTimeout(() => {
+        alert("👋 Welcome! How can we assist you today?");
+      }, 500);
+      setFirstVisit(false);
+    }
+  };
+
   return (
-    <>
-      <div className="bg-light">
-        {/* Hero Section */}
-        <section className="hero bg-dark text-white text-center py-5">
-          <Container>
-            <h1 className="display-4 fw-bold">Find the Best Deals Here!</h1>
-            <p className="lead">Shop the most recent and best-priced commodities.</p>
-            <Link to="/shop">
-              <Button variant="warning" size="lg">Shop Now</Button>
-            </Link>
-          </Container>
-        </section>
-
-        {/* Filters Section */}
-        <Container className="my-4">
-          <h2 className="text-center mb-4"><FaFilter /> Filter Products</h2>
-          <Row className="justify-content-center">
-            <Col md={4}>
-              <Form.Group controlId="categorySelect">
-                <Form.Label>Select Category</Form.Label>
-                <Form.Select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group controlId="priceRange">
-                <Form.Label>Price Range: ksh{priceRange[0]} - ksh{priceRange[1]}</Form.Label>
-                <Form.Range
-                  min="0"
-                  max="150,000"
-                  value={priceRange[1]}
-                  onChange={(e) => setPriceRange([0, Number(e.target.value)])}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+    <div className="bg-light">
+      {/* Hero Section */}
+      <section className="hero bg-dark text-white text-center py-5">
+        <Container>
+          <h1 className="display-4 fw-bold">Find the Best Deals Here!</h1>
+          <p className="lead">Shop the most recent and best-priced commodities.</p>
+          <Link to="/shop">
+            <Button variant="warning" size="lg">Shop Now</Button>
+          </Link>
         </Container>
+      </section>
 
-        {/* Most Recent Commodities */}
-        <Container className="my-5">
-          <h2 className="text-center mb-4">Most Recent Commodities</h2>
-          {loading ? (
-            <Loader />
-          ) : (
-            <Row>
-              {filteredProducts.length > 0 ? (
-                filteredProducts
-                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                  .slice(0, 4)
-                  .map((product) => (
-                    <Col md={3} key={product.id} className="mb-4">
-                      <ProductCard product={product} />
-                    </Col>
-                  ))
-              ) : (
-                <p className="text-center">No recent products found.</p>
-              )}
-            </Row>
-          )}
-        </Container>
+      {/* Filters Section */}
+      <Container className="my-4">
+        <h2 className="text-center mb-4"><FaFilter /> Filter Products</h2>
+        <Row className="justify-content-center">
+          <Col md={4}>
+            <Form.Group controlId="categorySelect">
+              <Form.Label>Select Category</Form.Label>
+              <Form.Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group controlId="priceRange">
+              <Form.Label>Price Range: ksh{priceRange[0]} - ksh{priceRange[1]}</Form.Label>
+              <Form.Range
+                min="0"
+                max="150000"
+                value={priceRange[1]}
+                onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+      </Container>
 
-        {/* Best Prices */}
-        <Container className="my-5">
-          <h2 className="text-center mb-4">Best Prices</h2>
-          {loading ? (
-            <Loader />
-          ) : (
-            <Row>
-              {filteredProducts.length > 0 ? (
-                filteredProducts
-                  .sort((a, b) => a.price - b.price)
-                  .slice(0, 4)
-                  .map((product) => (
-                    <Col md={3} key={product.id} className="mb-4">
-                      <ProductCard product={product} />
-                    </Col>
-                  ))
-              ) : (
-                <p className="text-center">No products available in this price range.</p>
-              )}
-            </Row>
-          )}
-        </Container>
-
-        {/* All Products */}
-        <Container className="my-5">
-          <h2 className="text-center mb-4">All Products</h2>
-          {loading ? (
-            <Loader />
-          ) : (
-            <Row>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
+      {/* Most Recent Commodities */}
+      <Container className="my-5">
+        <h2 className="text-center mb-4">Most Recent Commodities</h2>
+        {loading ? (
+          <Loader />
+        ) : (
+          <Row>
+            {filteredProducts.length > 0 ? (
+              filteredProducts
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 4)
+                .map((product) => (
                   <Col md={3} key={product.id} className="mb-4">
                     <ProductCard product={product} />
                   </Col>
                 ))
-              ) : (
-                <p className="text-center">No products found.</p>
-              )}
-            </Row>
-          )}
-        </Container>
+            ) : (
+              <p className="text-center">No recent products found.</p>
+            )}
+          </Row>
+        )}
+      </Container>
 
-        {/* Chat Button */}
-        <div className="position-fixed bottom-0 end-0 m-3">
-          <Button
-            variant="info"
-            className="p-3 shadow-lg"
-            onClick={() => setIsChatOpen(!isChatOpen)}
-          >
-            <FaComments size={24} /> {isChatOpen ? "Close Chat" : "Chat Support"}
-          </Button>
-        </div>
+      {/* Best Prices */}
+      <Container className="my-5">
+        <h2 className="text-center mb-4">Best Prices</h2>
+        {loading ? (
+          <Loader />
+        ) : (
+          <Row>
+            {filteredProducts.length > 0 ? (
+              filteredProducts
+                .sort((a, b) => a.price - b.price)
+                .slice(0, 4)
+                .map((product) => (
+                  <Col md={3} key={product.id} className="mb-4">
+                    <ProductCard product={product} />
+                  </Col>
+                ))
+            ) : (
+              <p className="text-center">No products available in this price range.</p>
+            )}
+          </Row>
+        )}
+      </Container>
 
-        {/* Chat Panel */}
-        <ChatSupport isOpen={isChatOpen} toggleChat={() => setIsChatOpen(false)} />
+      {/* All Products */}
+      <Container className="my-5">
+        <h2 className="text-center mb-4">All Products</h2>
+        {loading ? (
+          <Loader />
+        ) : (
+          <Row>
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <Col md={3} key={product.id} className="mb-4">
+                  <ProductCard product={product} />
+                </Col>
+              ))
+            ) : (
+              <p className="text-center">No products found.</p>
+            )}
+          </Row>
+        )}
+      </Container>
+
+      {/* Chat Button */}
+      <div className="position-fixed bottom-0 end-0 m-3">
+        <Button variant="info" className="p-3 shadow-lg" onClick={toggleChat}>
+          <FaComments size={24} /> {isChatOpen ? "Close Chat" : "Chat Support"}
+        </Button>
       </div>
-    </>
+
+      {/* Chat Panel */}
+      {isChatOpen && <ChatSupport isOpen={isChatOpen} toggleChat={toggleChat} />}
+    </div>
   );
 };
 
