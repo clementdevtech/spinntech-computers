@@ -32,7 +32,7 @@ exports.airesponse = async (req, res) => {
 // User sends a message
 exports.sendMessage = async (req, res) => {
     const { message } = req.body;
-
+    console.log(message);
     try {
         const response = await db("chat")
             .where("user_message", "ILIKE", `%${message}%`)
