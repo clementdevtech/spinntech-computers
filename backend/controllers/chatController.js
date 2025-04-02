@@ -29,35 +29,47 @@ exports.airesponse = async (req, res) => {
     }
 };
 
+
 // User sends a message
 exports.sendMessage = async (req, res) => {
     const { message } = req.body;
-    console.log(message);
+    
     try {
+        // Step 1: Check for a recent matching response
         const response = await db("chat")
             .where("user_message", "ILIKE", `%${message}%`)
             .select("bot_response")
+            .whereNotNull("bot_response")
+            .orderBy("created_at", "desc") // Get the latest response
             .first();
 
-        let botResponse = "Your message has been received. An admin will reply soon.";
-        if (response && response.bot_response) {
-            botResponse = response.bot_response;
-        } else {
-            await db("chat").insert({
-                user_message: message,
-                bot_response: null,
-                admin_assigned: false,
-            });
+        // Step 2: If a match is found, return the previous response
+        if (response) {
+            io.emit("receiveMessage", { userMessage: message, botResponse: response.bot_response });
+            return res.json({ response: response.bot_response });
         }
 
-        io.emit("receiveMessage", { userMessage: message, botResponse });
+        // Step 3: If no match found, insert the message into the database
+        const [queryId] = await db("chat")
+            .insert({
+                user_message: message,
+                bot_response: null,
+                admin_assigned: false, // No admin assigned yet
+                created_at: new Date()
+            })
+            .returning("id"); // Get the inserted query ID
 
-        return res.json({ response: botResponse });
+        // Step 4: Notify admins that a new query needs attention
+        io.emit("newUnansweredQuery", { queryId, message });
+
+        // Step 5: Send a placeholder response
+        return res.json({ response: "I'm not sure, but an admin will assist you soon." });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Database error" });
+        console.error("Error processing message:", error);
+        return res.status(500).json({ error: "Database error" });
     }
 };
+
 
 // Admin replies to a user
 exports.adminReply = async (req, res) => {

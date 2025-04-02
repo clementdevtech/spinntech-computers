@@ -11,12 +11,25 @@ const ChatBox = () => {
         dispatch(fetchAllMessages());
     }, [dispatch]);
 
-    const handleSend = () => {
-        if (message.trim()) {
-            dispatch(sendMessage(message));
-            setMessage("");
-        }
+    const handleSend = async () => {
+        if (!message.trim()) return;
+    
+        const welcomeMessages = [
+            "Hello! Let me check if I can find an answer for you...",
+            "Hi there! Give me a moment to fetch the best answer for you.",
+            "Hey! I'm on it. Let me see what I can find.",
+            "Greetings! Let me process your request quickly.",
+            "Welcome! I'll find the best response for you in no time."
+        ];
+    
+        const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    
+        setMessages([...messages, { user_message: message, bot_response: randomMessage }]);
+    
+        dispatch(sendMessage(message));
+        setMessage("");
     };
+    
 
     return (
         <div className="chat-box">
