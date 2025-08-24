@@ -53,7 +53,7 @@ const Navbar = () => {
       <nav className="navbar-upper d-flex justify-content-between align-items-center w-100 py-2 flex-wrap">
         <div className="d-flex align-items-center">
           <Link className="navbar-brand text-white fw-bold fs-4" to="/">
-            CompanyName
+            Netsafehub computers
           </Link>
         </div>
         <div className="d-flex align-items-center ms-auto flex-wrap">
