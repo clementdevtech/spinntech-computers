@@ -14,6 +14,9 @@ const ChatBox = () => {
     const handleSend = async () => {
         if (!message.trim()) return;
     
+        
+        setMessages([...messages, { user_message: message, bot_response: "" }]);
+    
         const welcomeMessages = [
             "Hello! Let me check if I can find an answer for you...",
             "Hi there! Give me a moment to fetch the best answer for you.",
@@ -23,9 +26,13 @@ const ChatBox = () => {
         ];
     
         const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { user_message: "", bot_response: randomMessage }
+        ]);
     
-        setMessages([...messages, { user_message: message, bot_response: randomMessage }]);
-    
+        // Step 3: Send the message to the backend
         dispatch(sendMessage(message));
         setMessage("");
     };

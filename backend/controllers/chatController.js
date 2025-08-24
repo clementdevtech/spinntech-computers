@@ -5,6 +5,7 @@ const { io } = require("../services/socket");
 exports.airesponse = async (req, res) => {
     try {
         const { userMessage } = req.body;
+        console.log(`User message received: ${userMessage}`);
 
         const response = await db("chat")
             .where("user_message", "ILIKE", `%${userMessage}%`)
@@ -13,6 +14,7 @@ exports.airesponse = async (req, res) => {
             .first();
 
         if (response) {
+            console.log(`Returning previous response: ${response.bot_response}`);
             return res.json({ answer: response.bot_response });
         }
 
@@ -22,6 +24,7 @@ exports.airesponse = async (req, res) => {
             admin_assigned: false,
         });
 
+        console.log("No previous response found, assigning to admin.");
         res.json({ answer: "I'm not sure, but an admin will assist you soon." });
     } catch (error) {
         console.error("Error processing AI response:", error);
@@ -29,51 +32,40 @@ exports.airesponse = async (req, res) => {
     }
 };
 
-
 // User sends a message
 exports.sendMessage = async (req, res) => {
     const { message } = req.body;
-    
+    console.log(`Processing user message: ${message}`);
     try {
-        // Step 1: Check for a recent matching response
         const response = await db("chat")
             .where("user_message", "ILIKE", `%${message}%`)
             .select("bot_response")
-            .whereNotNull("bot_response")
-            .orderBy("created_at", "desc") // Get the latest response
             .first();
 
-        // Step 2: If a match is found, return the previous response
-        if (response) {
-            io.emit("receiveMessage", { userMessage: message, botResponse: response.bot_response });
-            return res.json({ response: response.bot_response });
-        }
-
-        // Step 3: If no match found, insert the message into the database
-        const [queryId] = await db("chat")
-            .insert({
+        let botResponse = "Your message has been received. An admin will reply soon.";
+        if (response && response.bot_response) {
+            botResponse = response.bot_response;
+        } else {
+            await db("chat").insert({
                 user_message: message,
                 bot_response: null,
-                admin_assigned: false, // No admin assigned yet
-                created_at: new Date()
-            })
-            .returning("id"); // Get the inserted query ID
+                admin_assigned: false,
+            });
+            console.log("New message logged and awaiting admin response.");
+        }
 
-        // Step 4: Notify admins that a new query needs attention
-        io.emit("newUnansweredQuery", { queryId, message });
-
-        // Step 5: Send a placeholder response
-        return res.json({ response: "I'm not sure, but an admin will assist you soon." });
+        io.emit("receiveMessage", { userMessage: message, botResponse });
+        return res.json({ response: botResponse });
     } catch (error) {
         console.error("Error processing message:", error);
-        return res.status(500).json({ error: "Database error" });
+        res.status(500).json({ error: "Database error" });
     }
 };
-
 
 // Admin replies to a user
 exports.adminReply = async (req, res) => {
     const { query_id, reply } = req.body;
+    console.log(`Admin replying to query ${query_id}: ${reply}`);
 
     try {
         await db("chat")
@@ -85,7 +77,7 @@ exports.adminReply = async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.error(error);
+        console.error("Error updating admin reply:", error);
         res.status(500).json({ error: "Database error" });
     }
 };
@@ -94,9 +86,10 @@ exports.adminReply = async (req, res) => {
 exports.getUnansweredQueries = async (req, res) => {
     try {
         const queries = await db("chat").where("admin_assigned", false).select();
+        console.log("Fetched unanswered queries.");
         res.json(queries);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching unanswered queries:", error);
         res.status(500).json({ error: "Database error" });
     }
 };
@@ -105,9 +98,10 @@ exports.getUnansweredQueries = async (req, res) => {
 exports.getAllMessages = async (req, res) => {
     try {
         const messages = await db("chat").select();
+        console.log("Fetched all chat messages.");
         res.json(messages);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching chat messages:", error);
         res.status(500).json({ error: "Database error" });
     }
 };

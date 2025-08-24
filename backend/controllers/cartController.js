@@ -1,4 +1,5 @@
 const {db} = require("../db");
+const { v4: isUuid } = require('uuid');
 
 // Add item to cart
 exports.addToCart = async (req, res) => {
@@ -31,33 +32,40 @@ exports.addToCart = async (req, res) => {
 
 // Get cart items for the logged-in user
 exports.getCart = async (req, res) => {
-    console.log("Fetching cart items"); 
-    try {
+  console.log("Fetching cart items");
+  try {
       if (!req.user || !req.user.id) {
-        return res.status(401).json({ message: "Unauthorized: No user ID found" });
+          return res.status(401).json({ message: "Unauthorized: No user ID found" });
       }
-  
-      const userId = req.user.id;
+
+      const userId = String(req.user.id); // Convert to string
+
       console.log("Fetching cart for user:", userId);
-  
+
+      const isValidUUID = (id) => /^[0-9a-fA-F-]{36}$/.test(id);
+      if (!isValidUUID(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+      }
+
       const cartItems = await db("cart")
-        .join("products", "cart.product_id", "products.id")
-        .select(
-          "cart.id",
-          "cart.product_id",
-          "cart.quantity",
-          "products.name",
-          "products.price",
-          "products.image"
-        )
-        .where("cart.user_id", db.raw("CAST(? AS UUID)", [userId]));
-  
+          .join("products", "cart.product_id", "products.id")
+          .select(
+              "cart.id",
+              "cart.product_id",
+              "cart.quantity",
+              "products.name",
+              "products.price",
+              "products.image"
+          )
+          .where("cart.user_id", userId);
+
       res.json(cartItems);
-    } catch (error) {
+  } catch (error) {
       console.error("🔥 Error fetching cart:", error);
       res.status(500).json({ message: "Server error", error: error.message });
-    }
-  };
+  }
+};
+
 
 //Update cart item quantity
 exports.updateCartItem = async (req, res) => {
